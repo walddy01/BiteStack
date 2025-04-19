@@ -1,5 +1,3 @@
-// menuController.js
-
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { zodResponseFormat } = require("openai/helpers/zod");
@@ -12,16 +10,16 @@ const openai = new OpenAI({
 });
 
 /** Devuelve el lunes de la semana de la fecha dada */
-function getStartOfWeek(date) {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // semana inicia el lunes
+function obtenerInicioSemana(fecha) {
+  const d = new Date(fecha);
+  const dia = d.getDay();
+  const diff = d.getDate() - dia + (dia === 0 ? -6 : 1); // semana inicia el lunes
   return new Date(d.setDate(diff));
 }
 
 /** Formatea Date a "YYYY-MM-DD" */
-function formatDate(date) {
-  const d = new Date(date);
+function formatearFecha(fecha) {
+  const d = new Date(fecha);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -29,19 +27,19 @@ function formatDate(date) {
 }
 
 // Esquemas Zod para validar la respuesta de IA
-const IngredienteSchema = z.object({
+const SchemaIngrediente = z.object({
   ingredient: z.string(),
   notes: z.string().optional(),
   amount: z.number(),
   unit: z.string(),
 });
-const RecetaSchema = z.object({
+const SchemaReceta = z.object({
   title: z.string(),
   description: z.string(),
   number_of_servings: z.number(),
   difficulty: z.enum(["Fácil", "Media", "Difícil"]),
   prep_time: z.number(),
-  ingredients: z.array(IngredienteSchema),
+  ingredients: z.array(SchemaIngrediente),
   instructions: z.array(z.string()),
   total_calories_per_serving: z.number(),
   protein_per_serving: z.number(),
@@ -52,10 +50,10 @@ const RecetaSchema = z.object({
 /** GET /menus/usuario/:id */
 const getMenusUsuario = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const idUsuario = parseInt(req.params.id, 10);
 
-    const menus = await prisma.menu.findMany({
-      where: { usuario_id: userId },
+    const listaMenus = await prisma.menu.findMany({
+      where: { usuario_id: idUsuario },
       orderBy: { created_at: "desc" },
       include: {
         recetasProgramadas: {
@@ -76,19 +74,19 @@ const getMenusUsuario = async (req, res) => {
       },
     });
 
-    const data = menus.map(menu => ({
+    const data = listaMenus.map(menu => ({
       menuId: menu.id,
-      menuDate: formatDate(menu.fecha_inicio_semana),
-      recipes: menu.recetasProgramadas.map(rp => ({
-        id: rp.receta.id,
-        title: rp.receta.titulo,
-        description: rp.receta.descripcion,
-        prep_time: rp.receta.tiempo_prep,
-        servings: rp.receta.numero_raciones,
-        difficulty: rp.receta.dificultad,
-        favorite: rp.receta.favorito,
-        date: formatDate(rp.fecha),
-        mealType: rp.tipo_comida,
+      menuDate: formatearFecha(menu.fecha_inicio_semana),
+      recipes: menu.recetasProgramadas.map(recetaProg => ({
+        id: recetaProg.receta.id,
+        title: recetaProg.receta.titulo,
+        description: recetaProg.receta.descripcion,
+        prep_time: recetaProg.receta.tiempo_prep,
+        servings: recetaProg.receta.numero_raciones,
+        difficulty: recetaProg.receta.dificultad,
+        favorite: recetaProg.receta.favorito,
+        date: formatearFecha(recetaProg.fecha),
+        mealType: recetaProg.tipo_comida,
       })),
     }));
 
@@ -105,15 +103,15 @@ const getMenusUsuario = async (req, res) => {
 /** GET /menu/semana/usuario/:id */
 const getMenuSemanaUsuario = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const idUsuario = parseInt(req.params.id, 10);
 
-    const startOfWeek = getStartOfWeek(new Date());
-    const startOfWeekDate = new Date(formatDate(startOfWeek));
+    const inicioSemana = obtenerInicioSemana(new Date());
+    const fechaInicioSemana = new Date(formatearFecha(inicioSemana));
 
-    const menu = await prisma.menu.findFirst({
+    const menuSemana = await prisma.menu.findFirst({
       where: {
-        usuario_id: userId,
-        fecha_inicio_semana: startOfWeekDate,
+        usuario_id: idUsuario,
+        fecha_inicio_semana: fechaInicioSemana,
       },
       orderBy: { created_at: "desc" },
       include: {
@@ -135,7 +133,7 @@ const getMenuSemanaUsuario = async (req, res) => {
       },
     });
 
-    if (!menu) {
+    if (!menuSemana) {
       return res.status(200).json({
         message: "No se encontró un menú para la semana actual",
         data: [],
@@ -143,18 +141,18 @@ const getMenuSemanaUsuario = async (req, res) => {
     }
 
     const data = {
-      menuId: menu.id,
-      menuDate: formatDate(menu.fecha_inicio_semana),
-      recipes: menu.recetasProgramadas.map(rp => ({
-        id: rp.receta.id,
-        title: rp.receta.titulo,
-        description: rp.receta.descripcion,
-        prep_time: rp.receta.tiempo_prep,
-        servings: rp.receta.numero_raciones,
-        difficulty: rp.receta.dificultad,
-        favorite: rp.receta.favorito,
-        date: formatDate(rp.fecha),
-        mealType: rp.tipo_comida,
+      menuId: menuSemana.id,
+      menuDate: formatearFecha(menuSemana.fecha_inicio_semana),
+      recipes: menuSemana.recetasProgramadas.map(recetaProg => ({
+        id: recetaProg.receta.id,
+        title: recetaProg.receta.titulo,
+        description: recetaProg.receta.descripcion,
+        prep_time: recetaProg.receta.tiempo_prep,
+        servings: recetaProg.receta.numero_raciones,
+        difficulty: recetaProg.receta.dificultad,
+        favorite: recetaProg.receta.favorito,
+        date: formatearFecha(recetaProg.fecha),
+        mealType: recetaProg.tipo_comida,
       })),
     };
 
@@ -171,21 +169,21 @@ const getMenuSemanaUsuario = async (req, res) => {
 /** GET /listas-compra/usuario/:id */
 const getListasCompraUsuario = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const idUsuario = parseInt(req.params.id, 10);
 
-    const menus = await prisma.menu.findMany({
-      where: { usuario_id: userId },
+    const listaMenus = await prisma.menu.findMany({
+      where: { usuario_id: idUsuario },
       orderBy: { created_at: "desc" },
     });
 
-    const allLists = await Promise.all(
-      menus.map(async menu => {
-        const listasCompra = await prisma.listaCompra.findMany({
+    const todasListas = await Promise.all(
+      listaMenus.map(async menu => {
+        const listasCompraMenu = await prisma.listaCompra.findMany({
           where: { menu_id: menu.id },
         });
 
         return Promise.all(
-          listasCompra.map(async lista => {
+          listasCompraMenu.map(async lista => {
             const ingredientesLista = await prisma.ingredienteListaCompra.findMany({
               where: { lista_compra_id: lista.id },
               include: { ingrediente: true },
@@ -199,7 +197,7 @@ const getListasCompraUsuario = async (req, res) => {
 
             return {
               shoppingListId: lista.id,
-              date: formatDate(menu.fecha_inicio_semana),
+              date: formatearFecha(menu.fecha_inicio_semana),
               ingredients,
             };
           })
@@ -207,7 +205,7 @@ const getListasCompraUsuario = async (req, res) => {
       })
     );
 
-    const data = allLists.flat();
+    const data = todasListas.flat();
     res.json({ message: "Listas de compra obtenidas correctamente", data });
   } catch (error) {
     console.error(error);
@@ -224,20 +222,20 @@ const alternarAdquirido = async (req, res) => {
     const idLista = parseInt(req.params.idLista, 10);
     const idIngrediente = parseInt(req.params.idIngrediente, 10);
 
-    const item = await prisma.ingredienteListaCompra.findFirst({
+    const itemLista = await prisma.ingredienteListaCompra.findFirst({
       where: { lista_compra_id: idLista, ingrediente_id: idIngrediente },
     });
-    if (!item) {
+    if (!itemLista) {
       return res.status(404).json({ error: "Ingrediente en la lista no encontrado" });
     }
 
-    const updated = await prisma.ingredienteListaCompra.update({
-      where: { id: item.id },
-      data: { adquirido: !item.adquirido },
+    const actualizado = await prisma.ingredienteListaCompra.update({
+      where: { id: itemLista.id },
+      data: { adquirido: !itemLista.adquirido },
     });
 
     res.json({
-      message: `Ingrediente ${updated.adquirido ? "marcado como adquirido" : "desmarcado como adquirido"}`,
+      message: `Ingrediente ${actualizado.adquirido ? "marcado como adquirido" : "desmarcado como adquirido"}`,
     });
   } catch (error) {
     console.error(error);
@@ -250,22 +248,22 @@ const alternarAdquirido = async (req, res) => {
 
 /** POST /generar-menu/:id */
 const generarMenu = async (req, res) => {
-  const userId = parseInt(req.params.id, 10);
+  const idUsuario = parseInt(req.params.id, 10);
 
   // Determinar tipos de comida
-  let selectedMealTypes = [];
-  if (req.body.desayuno) selectedMealTypes.push("Desayuno");
-  if (req.body.almuerzo) selectedMealTypes.push("Almuerzo");
-  if (req.body.cena) selectedMealTypes.push("Cena");
-  if (selectedMealTypes.length === 0) {
-    selectedMealTypes = ["Desayuno", "Almuerzo", "Cena"];
+  let tiposComidaSeleccionados = [];
+  if (req.body.desayuno) tiposComidaSeleccionados.push("Desayuno");
+  if (req.body.almuerzo) tiposComidaSeleccionados.push("Almuerzo");
+  if (req.body.cena) tiposComidaSeleccionados.push("Cena");
+  if (tiposComidaSeleccionados.length === 0) {
+    tiposComidaSeleccionados = ["Desayuno", "Almuerzo", "Cena"];
   }
-  const mealsPerDay = selectedMealTypes.length;
+  const comidasPorDia = tiposComidaSeleccionados.length;
 
   try {
     // Obtener datos del usuario
-    const usuario = await prisma.usuario.findUnique({
-      where: { id: userId },
+    const datosUsuario = await prisma.usuario.findUnique({
+      where: { id: idUsuario },
       select: {
         dieta: true,
         calorias: true,
@@ -274,35 +272,35 @@ const generarMenu = async (req, res) => {
         preferencias_adicionales: true,
       },
     });
-    if (!usuario) {
+    if (!datosUsuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
     // Fecha inicio de la semana
-    const startOfWeek = getStartOfWeek(new Date());
-    const startOfWeekDate = new Date(formatDate(startOfWeek));
+    const inicioSemana = obtenerInicioSemana(new Date());
+    const fechaInicioSemana = new Date(formatearFecha(inicioSemana));
 
     // Verificar si ya existe menú para esta semana
-    const existing = await prisma.menu.findFirst({
-      where: { usuario_id: userId, fecha_inicio_semana: startOfWeekDate },
+    const menuExistente = await prisma.menu.findFirst({
+      where: { usuario_id: idUsuario, fecha_inicio_semana: fechaInicioSemana },
     });
-    if (existing) {
+    if (menuExistente) {
       return res.status(409).json({ error: "Ya existe un menú para esta semana." });
     }
 
     // Construir prompts para IA
-    const prompts = [];
-    for (let day = 0; day < 7; day++) {
-      selectedMealTypes.forEach(meal => {
-        let prompt = `Genera una receta saludable para ${meal} del día ${day + 1}.`;
-        if (usuario.dieta) prompt += ` Dieta: ${usuario.dieta}.`;
-        if (usuario.calorias) prompt += ` Calorías deseadas: ${usuario.calorias}.`;
-        if (usuario.alergias) prompt += ` Alergias: ${usuario.alergias}.`;
-        if (usuario.porciones) prompt += ` Porciones: ${usuario.porciones}.`;
-        if (usuario.preferencias_adicionales) {
-          prompt += ` Preferencias adicionales: ${usuario.preferencias_adicionales}.`;
+    const listaPrompts = [];
+    for (let dia = 0; dia < 7; dia++) {
+      tiposComidaSeleccionados.forEach(comida => {
+        let prompt = `Genera una receta saludable para ${comida} del día ${dia + 1}.`;
+        if (datosUsuario.dieta) prompt += ` Dieta: ${datosUsuario.dieta}.`;
+        if (datosUsuario.calorias) prompt += ` Calorías deseadas: ${datosUsuario.calorias}.`;
+        if (datosUsuario.alergias) prompt += ` Alergias: ${datosUsuario.alergias}.`;
+        if (datosUsuario.porciones) prompt += ` Porciones: ${datosUsuario.porciones}.`;
+        if (datosUsuario.preferencias_adicionales) {
+          prompt += ` Preferencias adicionales: ${datosUsuario.preferencias_adicionales}.`;
         }
-        prompts.push(prompt);
+        listaPrompts.push(prompt);
       });
     }
 
@@ -321,121 +319,121 @@ La receta debe estar en español y los field names en inglés.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },
         ],
-        response_format: zodResponseFormat(RecetaSchema, "receta"),
+        response_format: zodResponseFormat(SchemaReceta, "receta"),
       });
       return completion.choices[0].message.parsed;
     };
 
     // Generar todas las recetas IA
-    const recetasIA = [];
-    for (let day = 0; day < 7; day++) {
-      const batch = prompts.slice(day * mealsPerDay, day * mealsPerDay + mealsPerDay);
-      const dayRecipes = await Promise.all(batch.map(generarRecetaAI));
-      recetasIA.push(...dayRecipes);
+    const recetasGeneradasIA = [];
+    for (let dia = 0; dia < 7; dia++) {
+      const lote = listaPrompts.slice(dia * comidasPorDia, dia * comidasPorDia + comidasPorDia);
+      const recetasDia = await Promise.all(lote.map(generarRecetaAI));
+      recetasGeneradasIA.push(...recetasDia);
     }
 
     // Transacción principal: crear menú, lista, recetas y programaciones
-    const { newMenu, newList, recetasCreadas } = await prisma.$transaction(async tx => {
-      const m = await tx.menu.create({
-        data: { usuario_id: userId, fecha_inicio_semana: startOfWeekDate },
+    const { nuevoMenu, nuevaLista, recetasGuardadas } = await prisma.$transaction(async tx => {
+      const menuCreado = await tx.menu.create({
+        data: { usuario_id: idUsuario, fecha_inicio_semana: fechaInicioSemana },
       });
-      const l = await tx.listaCompra.create({ data: { menu_id: m.id } });
-      const created = [];
+      const listaCreada = await tx.listaCompra.create({ data: { menu_id: menuCreado.id } });
+      const recetasTemporales = [];
 
-      for (let i = 0; i < recetasIA.length; i++) {
-        const rIA = recetasIA[i];
-        const dayIndex = Math.floor(i / mealsPerDay);
-        const mealIndex = i % mealsPerDay;
-        const tipo_comida = selectedMealTypes[mealIndex];
-        const fechaRec = new Date(startOfWeekDate);
-        fechaRec.setDate(fechaRec.getDate() + dayIndex);
+      for (let i = 0; i < recetasGeneradasIA.length; i++) {
+        const recetaIA = recetasGeneradasIA[i];
+        const indiceDia = Math.floor(i / comidasPorDia);
+        const indiceComida = i % comidasPorDia;
+        const tipo_comida = tiposComidaSeleccionados[indiceComida];
+        const fechaReceta = new Date(fechaInicioSemana);
+        fechaReceta.setDate(fechaReceta.getDate() + indiceDia);
 
         const recetaCreada = await tx.receta.create({
           data: {
-            titulo: rIA.title,
-            descripcion: rIA.description,
-            numero_raciones: rIA.number_of_servings,
-            dificultad: rIA.difficulty,
-            tiempo_prep: rIA.prep_time,
-            instrucciones: rIA.instructions.join("\n"),
-            calorias: Math.round(rIA.total_calories_per_serving * rIA.number_of_servings),
-            proteinas: Math.round(rIA.protein_per_serving * rIA.number_of_servings),
-            carbohidratos: Math.round(rIA.carbohydrates_per_serving * rIA.number_of_servings),
-            grasas: Math.round(rIA.fat_per_serving * rIA.number_of_servings),
+            titulo: recetaIA.title,
+            descripcion: recetaIA.description,
+            numero_raciones: recetaIA.number_of_servings,
+            dificultad: recetaIA.difficulty,
+            tiempo_prep: recetaIA.prep_time,
+            instrucciones: recetaIA.instructions.join("\n"),
+            calorias: Math.round(recetaIA.total_calories_per_serving * recetaIA.number_of_servings),
+            proteinas: Math.round(recetaIA.protein_per_serving * recetaIA.number_of_servings),
+            carbohidratos: Math.round(recetaIA.carbohydrates_per_serving * recetaIA.number_of_servings),
+            grasas: Math.round(recetaIA.fat_per_serving * recetaIA.number_of_servings),
             favorito: false,
-            usuario_id: userId,
+            usuario_id: idUsuario,
           },
         });
-        created.push(recetaCreada);
+        recetasTemporales.push(recetaCreada);
 
         await tx.menuRecetaDia.create({
           data: {
-            menu_id: m.id,
+            menu_id: menuCreado.id,
             receta_id: recetaCreada.id,
-            fecha: fechaRec,
+            fecha: fechaReceta,
             tipo_comida,
           },
         });
       }
 
-      return { newMenu: m, newList: l, recetasCreadas: created };
+      return { nuevoMenu: menuCreado, nuevaLista: listaCreada, recetasGuardadas: recetasTemporales };
     });
 
     // Insertar ingredientes únicos en tabla Ingrediente
-    const ingredientesUnicos = new Map();
-    recetasIA.forEach(r => {
-      r.ingredients.forEach(ing => {
-        if (!ingredientesUnicos.has(ing.ingredient)) {
-          ingredientesUnicos.set(ing.ingredient, ing);
+    const mapaIngredientesUnicos = new Map();
+    recetasGeneradasIA.forEach(receta => {
+      receta.ingredients.forEach(ingrediente => {
+        if (!mapaIngredientesUnicos.has(ingrediente.ingredient)) {
+          mapaIngredientesUnicos.set(ingrediente.ingredient, ingrediente);
         }
       });
     });
-    if (ingredientesUnicos.size > 0) {
+    if (mapaIngredientesUnicos.size > 0) {
       await prisma.ingrediente.createMany({
-        data: [...ingredientesUnicos.values()].map(ing => ({ nombre: ing.ingredient })),
+        data: [...mapaIngredientesUnicos.values()].map(ingrediente => ({ nombre: ingrediente.ingredient })),
         skipDuplicates: true,
       });
     }
 
     // Obtener IDs de ingredientes
-    const ingredientesDB = await prisma.ingrediente.findMany({
-      where: { nombre: { in: [...ingredientesUnicos.keys()] } },
+    const ingredientesEnDB = await prisma.ingrediente.findMany({
+      where: { nombre: { in: [...mapaIngredientesUnicos.keys()] } },
       select: { id: true, nombre: true },
     });
-    const ingredientesMap = new Map(ingredientesDB.map(i => [i.nombre, i.id]));
+    const mapaIdsIngredientes = new Map(ingredientesEnDB.map(ing => [ing.nombre, ing.id]));
 
     // Crear relaciones RecetaIngrediente
-    const rels = [];
-    recetasIA.forEach((r, idx) => {
-      const recetaId = recetasCreadas[idx].id;
-      r.ingredients.forEach(ing => {
-        const ingId = ingredientesMap.get(ing.ingredient);
-        if (ingId) {
-          rels.push({
-            receta_id: recetaId,
-            ingrediente_id: ingId,
-            cantidad: ing.amount.toString(),
-            unidad: ing.unit,
-            nota: ing.notes || "",
+    const relacionesRecetaIngrediente = [];
+    recetasGeneradasIA.forEach((recetaIA, indice) => {
+      const idReceta = recetasGuardadas[indice].id;
+      recetaIA.ingredients.forEach(ingrediente => {
+        const idIngrediente = mapaIdsIngredientes.get(ingrediente.ingredient);
+        if (idIngrediente) {
+          relacionesRecetaIngrediente.push({
+            receta_id: idReceta,
+            ingrediente_id: idIngrediente,
+            cantidad: ingrediente.amount.toString(),
+            unidad: ingrediente.unit,
+            nota: ingrediente.notes || "",
           });
         }
       });
     });
-    if (rels.length > 0) {
+    if (relacionesRecetaIngrediente.length > 0) {
       await prisma.recetaIngrediente.createMany({
-        data: rels,
+        data: relacionesRecetaIngrediente,
         skipDuplicates: true,
       });
     }
 
     // Añadir ingredientes a la lista de compra
-    const listaItems = [...ingredientesMap.values()].map(ingId => ({
-      lista_compra_id: newList.id,
-      ingrediente_id: ingId,
+    const itemsListaCompra = [...mapaIdsIngredientes.values()].map(idIngrediente => ({
+      lista_compra_id: nuevaLista.id,
+      ingrediente_id: idIngrediente,
     }));
-    if (listaItems.length > 0) {
+    if (itemsListaCompra.length > 0) {
       await prisma.ingredienteListaCompra.createMany({
-        data: listaItems,
+        data: itemsListaCompra,
         skipDuplicates: true,
       });
     }

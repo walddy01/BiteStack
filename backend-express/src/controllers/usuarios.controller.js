@@ -10,17 +10,17 @@ const login = async (req, res) => {
             return res.status(400).json({ error: "Email y contraseña son requeridos" });
         }
 
-        const user = await prisma.usuario.findUnique({ where: { email } });
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
 
-        if (!user) {
+        if (!usuarioExistente) {
             return res.status(401).json({ error: "Credenciales inválidas" });
         }
 
-        if (!user.activo) {
+        if (!usuarioExistente.activo) {
             return res.status(401).json({ error: 'La cuenta está desactivada.' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, usuarioExistente.password);
 
         if (!passwordMatch) {
             return res.status(401).json({ error: "Credenciales inválidas" });
@@ -30,19 +30,19 @@ const login = async (req, res) => {
         res.json({
             message: "Inicio de sesión exitoso",
             data: {
-                id: user.id,
-                firstName: user.nombre,
-                lastName: user.apellidos,
-                email: user.email,
-                admin: user.admin,
-                active: user.activo,
-                allergies: user.alergias,
-                calories: user.calorias,
-                diet: user.dieta,
-                servings: user.porciones,
-                additionalPreferences: user.preferencias_adicionales,
-                createdAt: user.created_at,
-                updatedAt: user.updated_at
+                id: usuarioExistente.id,
+                firstName: usuarioExistente.nombre,
+                lastName: usuarioExistente.apellidos,
+                email: usuarioExistente.email,
+                admin: usuarioExistente.admin,
+                active: usuarioExistente.activo,
+                allergies: usuarioExistente.alergias,
+                calories: usuarioExistente.calorias,
+                diet: usuarioExistente.dieta,
+                servings: usuarioExistente.porciones,
+                additionalPreferences: usuarioExistente.preferencias_adicionales,
+                createdAt: usuarioExistente.created_at,
+                updatedAt: usuarioExistente.updated_at
             }
         });
     } catch (error) {
@@ -59,14 +59,14 @@ const registro = async (req, res) => {
             return res.status(400).json({ error: "Datos inválidos o incompletos" });
         }
 
-        const existingUser = await prisma.usuario.findUnique({ where: { email } });
-        if (existingUser) {
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
+        if (usuarioExistente) {
             return res.status(409).json({ error: "El email ya está registrado" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await prisma.usuario.create({
+        const nuevoUsuario = await prisma.usuario.create({
             data: {
                 nombre,
                 apellidos,
@@ -80,7 +80,7 @@ const registro = async (req, res) => {
 
         res.status(201).json({
             message: "Registro exitoso",
-            data: { id: newUser.id }
+            data: { id: nuevoUsuario.id }
         });
     } catch (error) {
         console.error(error);
@@ -90,7 +90,7 @@ const registro = async (req, res) => {
 
 const getAllUsuarios = async (req, res) => {
     try {
-        const usuarios = await prisma.usuario.findMany({
+        const listaUsuarios = await prisma.usuario.findMany({
             select: {
                 id: true,
                 nombre: true,
@@ -109,23 +109,23 @@ const getAllUsuarios = async (req, res) => {
         });
 
         // Mapeo inline de cada usuario a etiquetas en inglés
-        const usersTransformed = usuarios.map(user => ({
-            id: user.id,
-            firstName: user.nombre,
-            lastName: user.apellidos,
-            email: user.email,
-            admin: user.admin,
-            active: user.activo,
-            allergies: user.alergias,
-            calories: user.calorias,
-            diet: user.dieta,
-            servings: user.porciones,
-            additionalPreferences: user.preferencias_adicionales,
-            createdAt: user.created_at,
-            updatedAt: user.updated_at
+        const usuariosTransformados = listaUsuarios.map(usuario => ({
+            id: usuario.id,
+            firstName: usuario.nombre,
+            lastName: usuario.apellidos,
+            email: usuario.email,
+            admin: usuario.admin,
+            active: usuario.activo,
+            allergies: usuario.alergias,
+            calories: usuario.calorias,
+            diet: usuario.dieta,
+            servings: usuario.porciones,
+            additionalPreferences: usuario.preferencias_adicionales,
+            createdAt: usuario.created_at,
+            updatedAt: usuario.updated_at
         }));
 
-        res.json({ message: "Usuarios obtenidos correctamente", data: usersTransformed });
+        res.json({ message: "Usuarios obtenidos correctamente", data: usuariosTransformados });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error al obtener usuarios", details: error.message });
@@ -134,10 +134,10 @@ const getAllUsuarios = async (req, res) => {
 
 const getUsuario = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id);
+        const idUsuario = parseInt(req.params.id);
 
-        const user = await prisma.usuario.findUnique({
-            where: { id: userId },
+        const usuarioEncontrado = await prisma.usuario.findUnique({
+            where: { id: idUsuario },
             select: {
                 id: true,
                 nombre: true,
@@ -155,26 +155,26 @@ const getUsuario = async (req, res) => {
             },
         });
 
-        if (!user) {
+        if (!usuarioEncontrado) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
         res.json({
             message: "Usuario obtenido correctamente",
             data: {
-                id: user.id,
-                firstName: user.nombre,
-                lastName: user.apellidos,
-                email: user.email,
-                admin: user.admin,
-                active: user.activo,
-                allergies: user.alergias,
-                calories: user.calorias,
-                diet: user.dieta,
-                servings: user.porciones,
-                additionalPreferences: user.preferencias_adicionales,
-                createdAt: user.created_at,
-                updatedAt: user.updated_at
+                id: usuarioEncontrado.id,
+                firstName: usuarioEncontrado.nombre,
+                lastName: usuarioEncontrado.apellidos,
+                email: usuarioEncontrado.email,
+                admin: usuarioEncontrado.admin,
+                active: usuarioEncontrado.activo,
+                allergies: usuarioEncontrado.alergias,
+                calories: usuarioEncontrado.calorias,
+                diet: usuarioEncontrado.dieta,
+                servings: usuarioEncontrado.porciones,
+                additionalPreferences: usuarioEncontrado.preferencias_adicionales,
+                createdAt: usuarioEncontrado.created_at,
+                updatedAt: usuarioEncontrado.updated_at
             }
         });
     } catch (error) {
@@ -185,7 +185,7 @@ const getUsuario = async (req, res) => {
 
 const updateUsuario = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id);
+        const idUsuario = parseInt(req.params.id);
         const {
             nombre,
             apellidos,
@@ -198,21 +198,21 @@ const updateUsuario = async (req, res) => {
             preferencias_adicionales
         } = req.body;
 
-        const updateData = {};
+        const datosActualizacion = {};
 
-        if (nombre) updateData.nombre = nombre;
-        if (apellidos) updateData.apellidos = apellidos;
-        if (email) updateData.email = email;
-        if (password) updateData.password = await bcrypt.hash(password, 10);
-        if (alergias !== undefined) updateData.alergias = alergias;
-        if (calorias !== undefined) updateData.calorias = calorias;
-        if (dieta !== undefined) updateData.dieta = dieta;
-        if (porciones !== undefined) updateData.porciones = porciones;
-        if (preferencias_adicionales !== undefined) updateData.preferencias_adicionales = preferencias_adicionales;
+        if (nombre) datosActualizacion.nombre = nombre;
+        if (apellidos) datosActualizacion.apellidos = apellidos;
+        if (email) datosActualizacion.email = email;
+        if (password) datosActualizacion.password = await bcrypt.hash(password, 10);
+        if (alergias !== undefined) datosActualizacion.alergias = alergias;
+        if (calorias !== undefined) datosActualizacion.calorias = calorias;
+        if (dieta !== undefined) datosActualizacion.dieta = dieta;
+        if (porciones !== undefined) datosActualizacion.porciones = porciones;
+        if (preferencias_adicionales !== undefined) datosActualizacion.preferencias_adicionales = preferencias_adicionales;
 
         await prisma.usuario.update({
-            where: { id: userId },
-            data: updateData,
+            where: { id: idUsuario },
+            data: datosActualizacion,
         });
 
         res.json({ message: "Datos del perfil actualizados correctamente" });
@@ -224,19 +224,19 @@ const updateUsuario = async (req, res) => {
 
 const activarDesactivarUsuario = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id);
+        const idUsuario = parseInt(req.params.id);
 
-        const user = await prisma.usuario.findUnique({ where: { id: userId } });
-        if (!user) {
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { id: idUsuario } });
+        if (!usuarioExistente) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-        const updatedUser = await prisma.usuario.update({
-            where: { id: userId },
-            data: { activo: !user.activo },
+        const usuarioActualizado = await prisma.usuario.update({
+            where: { id: idUsuario },
+            data: { activo: !usuarioExistente.activo },
         });
 
-        res.json({ message: `Usuario ${updatedUser.activo ? "activado" : "desactivado"} correctamente` });
+        res.json({ message: `Usuario ${usuarioActualizado.activo ? "activado" : "desactivado"} correctamente` });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error en el servidor", details: error.message });
@@ -245,19 +245,19 @@ const activarDesactivarUsuario = async (req, res) => {
 
 const activarDesactivarAdmin = async (req, res) => {
     try {
-        const userId = parseInt(req.params.id);
+        const idUsuario = parseInt(req.params.id);
 
-        const user = await prisma.usuario.findUnique({ where: { id: userId } });
-        if (!user) {
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { id: idUsuario } });
+        if (!usuarioExistente) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-        const updatedUser = await prisma.usuario.update({
-            where: { id: userId },
-            data: { admin: !user.admin },
+        const usuarioActualizado = await prisma.usuario.update({
+            where: { id: idUsuario },
+            data: { admin: !usuarioExistente.admin },
         });
 
-        res.json({ message: `Permisos de administrador ${updatedUser.admin ? "activados" : "desactivados"} correctamente` });
+        res.json({ message: `Permisos de administrador ${usuarioActualizado.admin ? "activados" : "desactivados"} correctamente` });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error en el servidor", details: error.message });

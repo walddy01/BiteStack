@@ -1,5 +1,3 @@
-// recetasController.js
-
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { zodResponseFormat } = require("openai/helpers/zod");
@@ -12,8 +10,8 @@ const openai = new OpenAI({
 });
 
 /** Formatea un Date a "YYYY-MM-DD" */
-function formatDate(date) {
-  const d = new Date(date);
+function formatearFecha(fecha) {
+  const d = new Date(fecha);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -21,20 +19,20 @@ function formatDate(date) {
 }
 
 // Schemas Zod para validar respuesta de IA
-const IngredienteSchema = z.object({
+const SchemaIngrediente = z.object({
   ingredient: z.string(),
   notes: z.string().optional(),
   amount: z.number(),
   unit: z.string(),
 });
 
-const RecetaSchema = z.object({
+const SchemaReceta = z.object({
   title: z.string(),
   description: z.string(),
   number_of_servings: z.number(),
   difficulty: z.enum(["Fácil", "Media", "Difícil"]),
   prep_time: z.number(),
-  ingredients: z.array(IngredienteSchema),
+  ingredients: z.array(SchemaIngrediente),
   instructions: z.array(z.string()),
   total_calories_per_serving: z.number(),
   protein_per_serving: z.number(),
@@ -49,39 +47,39 @@ const RecetaSchema = z.object({
  */
 const getRecetasFavoritas = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const idUsuario = parseInt(req.params.id, 10);
 
     const recetas = await prisma.receta.findMany({
-      where: { usuario_id: userId, favorito: true },
+      where: { usuario_id: idUsuario, favorito: true },
       include: {
         recetaIngrediente: { include: { ingrediente: true } },
         programacionesMenu: { select: { fecha: true, tipo_comida: true } },
       },
     });
 
-    const data = recetas.map(r => ({
-      id: r.id,
-      title: r.titulo,
-      description: r.descripcion,
-      number_of_servings: r.numero_raciones,
-      difficulty: r.dificultad,
-      prep_time: r.tiempo_prep,
-      instructions: r.instrucciones,
-      calories: r.calorias,
-      protein: r.proteinas,
-      carbohydrates: r.carbohidratos,
-      fat: r.grasas,
-      favorite: r.favorito,
-      ingredients: r.recetaIngrediente.map(ri => ({
-        id: ri.ingrediente.id,
-        name: ri.ingrediente.nombre,
-        quantity: ri.cantidad,
-        unit: ri.unidad,
-        note: ri.nota,
+    const data = recetas.map(receta => ({
+      id: receta.id,
+      title: receta.titulo,
+      description: receta.descripcion,
+      number_of_servings: receta.numero_raciones,
+      difficulty: receta.dificultad,
+      prep_time: receta.tiempo_prep,
+      instructions: receta.instrucciones,
+      calories: receta.calorias,
+      protein: receta.proteinas,
+      carbohydrates: receta.carbohidratos,
+      fat: receta.grasas,
+      favorite: receta.favorito,
+      ingredients: receta.recetaIngrediente.map(recetaIng => ({
+        id: recetaIng.ingrediente.id,
+        name: recetaIng.ingrediente.nombre,
+        quantity: recetaIng.cantidad,
+        unit: recetaIng.unidad,
+        note: recetaIng.nota,
       })),
-      schedules: r.programacionesMenu.map(pm => ({
-        date: formatDate(pm.fecha),
-        mealType: pm.tipo_comida,
+      schedules: receta.programacionesMenu.map(progMenu => ({
+        date: formatearFecha(progMenu.fecha),
+        mealType: progMenu.tipo_comida,
       })),
     }));
 
@@ -101,17 +99,17 @@ const getRecetasFavoritas = async (req, res) => {
  */
 const alternarFavorito = async (req, res) => {
   try {
-    const recetaId = parseInt(req.params.id, 10);
-    const receta = await prisma.receta.findUnique({ where: { id: recetaId } });
+    const idReceta = parseInt(req.params.id, 10);
+    const receta = await prisma.receta.findUnique({ where: { id: idReceta } });
     if (!receta) {
       return res.status(404).json({ error: "Receta no encontrada" });
     }
-    const updated = await prisma.receta.update({
-      where: { id: recetaId },
+    const actualizada = await prisma.receta.update({
+      where: { id: idReceta },
       data: { favorito: !receta.favorito },
     });
     res.json({
-      message: `Receta ${updated.favorito ? "marcada como favorita" : "desmarcada como favorita"}`,
+      message: `Receta ${actualizada.favorito ? "marcada como favorita" : "desmarcada como favorita"}`,
     });
   } catch (error) {
     console.error(error);
@@ -125,44 +123,44 @@ const alternarFavorito = async (req, res) => {
  */
 const getReceta = async (req, res) => {
   try {
-    const recetaId = parseInt(req.params.receta_id, 10);
+    const idReceta = parseInt(req.params.receta_id, 10);
 
-    const r = await prisma.receta.findUnique({
-      where: { id: recetaId },
+    const recetaEncontrada = await prisma.receta.findUnique({
+      where: { id: idReceta },
       include: {
         recetaIngrediente: { include: { ingrediente: true } },
         programacionesMenu: { select: { fecha: true, tipo_comida: true } },
       },
     });
-    if (!r) {
+    if (!recetaEncontrada) {
       return res.status(404).json({ error: "Receta no encontrada" });
     }
 
     const data = {
       recipe: {
-        id: r.id,
-        title: r.titulo,
-        description: r.descripcion,
-        number_of_servings: r.numero_raciones,
-        difficulty: r.dificultad,
-        prep_time: r.tiempo_prep,
-        instructions: r.instrucciones,
-        calories: r.calorias,
-        protein: r.proteinas,
-        carbohydrates: r.carbohidratos,
-        fat: r.grasas,
-        favorite: r.favorito,
+        id: recetaEncontrada.id,
+        title: recetaEncontrada.titulo,
+        description: recetaEncontrada.descripcion,
+        number_of_servings: recetaEncontrada.numero_raciones,
+        difficulty: recetaEncontrada.dificultad,
+        prep_time: recetaEncontrada.tiempo_prep,
+        instructions: recetaEncontrada.instrucciones,
+        calories: recetaEncontrada.calorias,
+        protein: recetaEncontrada.proteinas,
+        carbohydrates: recetaEncontrada.carbohidratos,
+        fat: recetaEncontrada.grasas,
+        favorite: recetaEncontrada.favorito,
       },
-      ingredients: r.recetaIngrediente.map(ri => ({
-        id: ri.ingrediente.id,
-        name: ri.ingrediente.nombre,
-        quantity: ri.cantidad,
-        unit: ri.unidad,
-        note: ri.nota,
+      ingredients: recetaEncontrada.recetaIngrediente.map(recetaIng => ({
+        id: recetaIng.ingrediente.id,
+        name: recetaIng.ingrediente.nombre,
+        quantity: recetaIng.cantidad,
+        unit: recetaIng.unidad,
+        note: recetaIng.nota,
       })),
-      schedules: r.programacionesMenu.map(pm => ({
-        date: formatDate(pm.fecha),
-        mealType: pm.tipo_comida,
+      schedules: recetaEncontrada.programacionesMenu.map(progMenu => ({
+        date: formatearFecha(progMenu.fecha),
+        mealType: progMenu.tipo_comida,
       })),
     };
 
@@ -182,7 +180,7 @@ const getReceta = async (req, res) => {
  */
 const generarRecetaMock = async (req, res) => {
   try {
-    const mock = {
+    const recetaMock = {
       title: "Receta Mockeada",
       description: "Esta es una receta de prueba generada automáticamente.",
       number_of_servings: 4,
@@ -201,7 +199,7 @@ const generarRecetaMock = async (req, res) => {
       carbohydrates: 60,
       fat: 20,
     };
-    res.json(mock);
+    res.json(recetaMock);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al generar la receta mock", details: error.message });
@@ -216,12 +214,12 @@ const generarRecetaAI = async (req, res) => {
   try {
     const { userPrompt } = req.params;
     const systemPrompt = `
-Generate a recipe in JSON format with the following structure:
-- title, description, number_of_servings, difficulty, prep_time
-- ingredients: array con {ingredient, notes?, amount, unit (SI)}
-- instructions: array de strings
-- total_calories_per_serving, protein_per_serving, carbohydrates_per_serving, fat_per_serving
-La receta debe estar en español y los field names en inglés.
+    Generate a recipe in JSON format with the following structure:
+    - title, description, number_of_servings, difficulty, prep_time
+    - ingredients: array con {ingredient, notes?, amount, unit (SI)}
+    - instructions: array de strings
+    - total_calories_per_serving, protein_per_serving, carbohydrates_per_serving, fat_per_serving
+    La receta debe estar en español y los field names en inglés.
     `;
     const completion = await openai.beta.chat.completions.parse({
       model: "gemini-2.0-flash-lite",
@@ -229,7 +227,7 @@ La receta debe estar en español y los field names en inglés.
         { role: "system", content: systemPrompt },
         { role: "user",   content: userPrompt },
       ],
-      response_format: zodResponseFormat(RecetaSchema, "receta"),
+      response_format: zodResponseFormat(SchemaReceta, "receta"),
     });
     const receta = completion.choices[0].message.parsed;
     if (!receta) {

@@ -40,7 +40,7 @@ export default function Preferencias({
 	setComidasActivas,
 	generarMenu,
 }: Props) {
-	const toggleComida = (comida: 'desayuno' | 'almuerzo' | 'cena') => {
+	const alternarComida = (comida: 'desayuno' | 'almuerzo' | 'cena') => {
 		setComidasActivas((prevComidas) => ({
 			...prevComidas,
 			[comida]: !prevComidas[comida],
@@ -185,7 +185,7 @@ export default function Preferencias({
 							styles.comidasButton,
 							comidasActivas.desayuno && styles.comidasButtonActive,
 						]}
-						onPress={() => toggleComida('desayuno')}
+						onPress={() => alternarComida('desayuno')}
 					>
 						<Text
 							style={[
@@ -202,7 +202,7 @@ export default function Preferencias({
 							styles.comidasButton,
 							comidasActivas.almuerzo && styles.comidasButtonActive,
 						]}
-						onPress={() => toggleComida('almuerzo')}
+						onPress={() => alternarComida('almuerzo')}
 					>
 						<Text
 							style={[
@@ -219,7 +219,7 @@ export default function Preferencias({
 							styles.comidasButton,
 							comidasActivas.cena && styles.comidasButtonActive,
 						]}
-						onPress={() => toggleComida('cena')}
+						onPress={() => alternarComida('cena')}
 					>
 						<Text
 							style={[
