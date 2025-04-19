@@ -125,7 +125,7 @@ export default function Index() {
             generarMenu={generarMenu}
           />
 
-          <SliderRecetas />
+          <SliderRecetas userId={1}  />
 
         </ScrollView>
       </SafeAreaView>

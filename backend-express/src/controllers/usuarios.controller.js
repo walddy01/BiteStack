@@ -26,10 +26,28 @@ const login = async (req, res) => {
             return res.status(401).json({ error: "Credenciales inválidas" });
         }
 
-        res.json({ message: "Inicio de sesión exitoso", user });
+        // Mapeo de los campos del usuario a etiquetas en inglés
+        res.json({
+            message: "Inicio de sesión exitoso",
+            data: {
+                id: user.id,
+                firstName: user.nombre,
+                lastName: user.apellidos,
+                email: user.email,
+                admin: user.admin,
+                active: user.activo,
+                allergies: user.alergias,
+                calories: user.calorias,
+                diet: user.dieta,
+                servings: user.porciones,
+                additionalPreferences: user.preferencias_adicionales,
+                createdAt: user.created_at,
+                updatedAt: user.updated_at
+            }
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 
@@ -60,10 +78,13 @@ const registro = async (req, res) => {
             },
         });
 
-        res.status(201).json({ message: "Registro exitoso", id: newUser.id });
+        res.status(201).json({
+            message: "Registro exitoso",
+            data: { id: newUser.id }
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 
@@ -77,15 +98,37 @@ const getAllUsuarios = async (req, res) => {
                 email: true,
                 admin: true,
                 activo: true,
+                alergias: true,
+                calorias: true,
                 dieta: true,
                 porciones: true,
-                preferencias_adicionales: true
+                preferencias_adicionales: true,
+                created_at: true,
+                updated_at: true
             },
         });
-        res.json(usuarios);
+
+        // Mapeo inline de cada usuario a etiquetas en inglés
+        const usersTransformed = usuarios.map(user => ({
+            id: user.id,
+            firstName: user.nombre,
+            lastName: user.apellidos,
+            email: user.email,
+            admin: user.admin,
+            active: user.activo,
+            allergies: user.alergias,
+            calories: user.calorias,
+            diet: user.dieta,
+            servings: user.porciones,
+            additionalPreferences: user.preferencias_adicionales,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at
+        }));
+
+        res.json({ message: "Usuarios obtenidos correctamente", data: usersTransformed });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error al obtener usuarios", detalles: error.message });
+        res.status(500).json({ error: "Error al obtener usuarios", details: error.message });
     }
 };
 
@@ -106,7 +149,9 @@ const getUsuario = async (req, res) => {
                 calorias: true,
                 dieta: true,
                 porciones: true,
-                preferencias_adicionales: true
+                preferencias_adicionales: true,
+                created_at: true,
+                updated_at: true
             },
         });
 
@@ -114,10 +159,27 @@ const getUsuario = async (req, res) => {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-        res.json({ user });
+        res.json({
+            message: "Usuario obtenido correctamente",
+            data: {
+                id: user.id,
+                firstName: user.nombre,
+                lastName: user.apellidos,
+                email: user.email,
+                admin: user.admin,
+                active: user.activo,
+                allergies: user.alergias,
+                calories: user.calorias,
+                diet: user.dieta,
+                servings: user.porciones,
+                additionalPreferences: user.preferencias_adicionales,
+                createdAt: user.created_at,
+                updatedAt: user.updated_at
+            }
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 
@@ -156,7 +218,7 @@ const updateUsuario = async (req, res) => {
         res.json({ message: "Datos del perfil actualizados correctamente" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 
@@ -174,10 +236,10 @@ const activarDesactivarUsuario = async (req, res) => {
             data: { activo: !user.activo },
         });
 
-        res.json({ message: `Usuario ${updatedUser.activo ? 'activado' : 'desactivado'} correctamente` });
+        res.json({ message: `Usuario ${updatedUser.activo ? "activado" : "desactivado"} correctamente` });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 
@@ -195,10 +257,10 @@ const activarDesactivarAdmin = async (req, res) => {
             data: { admin: !user.admin },
         });
 
-        res.json({ message: `Permisos de administrador ${updatedUser.admin ? 'activados' : 'desactivados'} correctamente` });
+        res.json({ message: `Permisos de administrador ${updatedUser.admin ? "activados" : "desactivados"} correctamente` });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+        res.status(500).json({ error: "Error en el servidor", details: error.message });
     }
 };
 

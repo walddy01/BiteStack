@@ -22,11 +22,11 @@ export default function useObtenerPreferencias(idUsuario: number) {
       try {
         const res = await axios.get(`http://192.168.0.33:3000/api/usuarios/${idUsuario}`);
         const prefs = {
-          alergias: res.data.user.alergias,
-          calorias: res.data.user.calorias,
-          dieta: res.data.user.dieta,
-          porciones: res.data.user.porciones,
-          preferencias: res.data.user.preferencias_adicionales
+          alergias: res.data.data.allergies,
+          calorias: res.data.data.calories,
+          dieta: res.data.data.diet,
+          porciones: res.data.data.servings,
+          preferencias: res.data.data.additionalPreferences
         };
         setPreferencias(prefs);
         return res.data;

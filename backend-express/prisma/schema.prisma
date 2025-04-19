@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,7 +24,7 @@ model IngredienteListaCompra {
 
 model Ingrediente {
   id                      Int                     @id @default(autoincrement())
-  nombre                  String                  @db.VarChar(255)
+  nombre                  String                  @unique @db.VarChar(255)
   created_at              DateTime?               @default(now())
   updated_at              DateTime?               @updatedAt
   ingredienteListaCompra  IngredienteListaCompra[]
@@ -53,7 +51,7 @@ model Menu {
   lista_compras       ListaCompra[]
   usuario             Usuario     @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   recetasProgramadas  MenuRecetaDia[]
-  
+
   @@index([usuario_id])
 }
 
@@ -66,6 +64,7 @@ model RecetaIngrediente {
   nota           String?     @db.VarChar(255)
   created_at     DateTime?   @default(now())
   updated_at     DateTime?   @updatedAt
+
   ingrediente    Ingrediente @relation(fields: [ingrediente_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   receta         Receta      @relation(fields: [receta_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
@@ -79,6 +78,7 @@ model Receta {
   descripcion       String?         @db.VarChar(255)
   numero_raciones   Int
   dificultad        String          @db.VarChar(50)
+  tiempo_prep       Int?            // Tiempo de preparación en minutos
   instrucciones     String          @db.Text
   calorias          Int?
   proteinas         Int?
@@ -114,20 +114,20 @@ model MenuRecetaDia {
 }
 
 model Usuario {
-  id           Int         @id @default(autoincrement())
-  nombre       String      @db.VarChar(255)
-  apellidos    String      @db.VarChar(255)
-  email        String      @unique @db.VarChar(255)
-  password     String      @db.VarChar(255)
-  alergias     String?     @db.VarChar(255)
-  calorias     Int?
-  dieta        String?     @db.VarChar(255)      // Nuevo: Tipo de dieta (ej. vegetariana, vegana, etc.)
-  porciones    Int?                               // Nuevo: Cantidad de porciones deseadas
-  preferencias_adicionales String?  @db.VarChar(255)  // Nuevo: Otros gustos o restricciones
-  admin        Boolean     @default(false)
-  activo       Boolean     @default(true)
-  created_at   DateTime?   @default(now())
-  updated_at   DateTime?   @updatedAt
-  menus        Menu[]
-  recetas      Receta[]
+  id                        Int         @id @default(autoincrement())
+  nombre                    String      @db.VarChar(255)
+  apellidos                 String      @db.VarChar(255)
+  email                     String      @unique @db.VarChar(255)
+  password                  String      @db.VarChar(255)
+  alergias                  String?     @db.VarChar(255)
+  calorias                  Int?
+  dieta                     String?     @db.VarChar(255)
+  porciones                 Int?
+  preferencias_adicionales  String?     @db.VarChar(255)
+  admin                     Boolean     @default(false)
+  activo                    Boolean     @default(true)
+  created_at                DateTime?   @default(now())
+  updated_at                DateTime?   @updatedAt
+  menus                      Menu[]
+  recetas                   Receta[]
 }
