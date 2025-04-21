@@ -307,12 +307,30 @@ const generarMenu = async (req, res) => {
     // Función interna para generar receta con IA
     const generarRecetaAI = async prompt => {
       const systemPrompt = `
-Generate a recipe in JSON format with:
-- title, description, number_of_servings, difficulty, prep_time
-- ingredients (ingredient, notes, amount, unit SI)
-- instructions
-- total_calories_per_serving, protein_per_serving, carbohydrates_per_serving, fat_per_serving
-La receta debe estar en español y los field names en inglés.`;
+      Generate a recipe in JSON format with the following structure:
+      - **title**: Short and concise recipe title.
+      - **description**: Brief summary of the recipe.
+      - **number_of_servings**: Number of people the recipe serves.
+      - **difficulty**: Difficulty level of the recipe (e.g., Fácil, Media, Difícil).
+      - **prep_time**: Preparation time in minutes.
+      - **ingredients**: Array of ingredients, each with:
+          - **ingredient**: Name of the ingredient.
+          - **notes**: Additional details about the ingredient (optional).
+          - **amount**: Numeric value indicating the quantity.
+          - **unit**: **Use only units from the International System of Units (SI)** (grams, milliliters, liters).
+      - **instructions**: Array of step-by-step instructions.
+      - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings).
+      - **protein_per_serving**: Grams of protein per serving.
+      - **carbohydrates_per_serving**: Grams of carbohydrates per serving.
+      - **fat_per_serving**: Grams of fat per serving.
+
+      ### Important Notes:
+      - The recipe **must be in Spanish**.
+      - **Field names MUST remain in English**, as specified above.
+      - Provide specific ingredient quantities and clear instructions.
+      - Ensure that **nutritional values are calculated per serving** (divide total by number_of_servings).
+      - **Use only International System of Units (SI) measurements**: grams (g), milliliters (ml), liters (l), and degrees Celsius (°C). Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit.
+      `;
       const completion = await openai.beta.chat.completions.parse({
         model: "gemini-2.0-flash-lite",
         messages: [
@@ -377,6 +395,8 @@ La receta debe estar en español y los field names en inglés.`;
       }
 
       return { nuevoMenu: menuCreado, nuevaLista: listaCreada, recetasGuardadas: recetasTemporales };
+    }, {
+      timeout: 120000 // Tiempo de espera de 2 minutos para la transacción
     });
 
     // Insertar ingredientes únicos en tabla Ingrediente
@@ -390,7 +410,7 @@ La receta debe estar en español y los field names en inglés.`;
     });
     if (mapaIngredientesUnicos.size > 0) {
       await prisma.ingrediente.createMany({
-        data: [...mapaIngredientesUnicos.values()].map(ingrediente => ({ nombre: ingrediente.ingredient })),
+        data: [...mapaIngredientesUnicos.values()].map(ing => ({ nombre: ing.ingredient })),
         skipDuplicates: true,
       });
     }
