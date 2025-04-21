@@ -40,7 +40,13 @@ export default function useObtenerMenuSemana(userId: number) {
           `http://192.168.0.33:3000/api/menus/menuSemana/${userId}`
         );
         // la API devuelve DayMenu con recipes[].mealType
-        setMenuData(res.data.data);
+        // Comprobar si data es un array vacío o no es un objeto válido
+        if (res.data.data?.menuId) {
+          setMenuData(res.data.data);
+        } else {
+          setMenuData(null);
+          console.warn('No se encontró menú válido:', res.data);
+        }
       } catch (err: any) {
         const mensaje = err.response?.data?.message || 'Error al obtener el menú';
         setError(new Error(mensaje));

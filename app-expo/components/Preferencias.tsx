@@ -9,7 +9,7 @@ interface Props {
 		calorias: number;
 		alergias: string;
 		porciones: number;
-		preferencias: string;
+		preferencias_adicionales: string;
 	};
 	editarPreferencias: boolean;
 	setPreferenciasOriginales: (preferencias: Props['preferencias']) => void;
@@ -135,8 +135,8 @@ export default function Preferencias({
 								numberOfLines={4}
 								textAlignVertical="top"
 								placeholder="Escribe aquí tus preferencias adicionales..."
-								value={preferencias.preferencias}
-								onChangeText={(text) => handleChange('preferencias', text)}
+								value={preferencias.preferencias_adicionales}
+								onChangeText={(text) => handleChange('preferencias_adicionales', text)}
 							/>
 						</View>
 					</View>

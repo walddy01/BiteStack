@@ -6,7 +6,7 @@ interface Preferencias {
   calorias: number;
   alergias: string;
   porciones: number;
-  preferencias: string;
+  preferencias_adicionales: string;
 }
 
 export default function useActualizarPreferencias() {

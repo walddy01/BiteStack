@@ -23,7 +23,7 @@ export default function Index() {
     calorias: 450,
     alergias: '',
     porciones: 1,
-    preferencias: '',
+    preferencias_adicionales: '',
   })
 
   const [preferenciasOriginales, setPreferenciasOriginales] = useState(preferencias)

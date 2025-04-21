@@ -6,7 +6,7 @@ interface Preferencias {
   calorias: number;
   alergias: string;
   porciones: number;
-  preferencias: string;
+  preferencias_adicionales: string;
 }
 
 export default function useObtenerPreferencias(idUsuario: number) {
@@ -26,7 +26,7 @@ export default function useObtenerPreferencias(idUsuario: number) {
           calorias: res.data.data.calories,
           dieta: res.data.data.diet,
           porciones: res.data.data.servings,
-          preferencias: res.data.data.additionalPreferences
+          preferencias_adicionales: res.data.data.additionalPreferences
         };
         setPreferencias(prefs);
         return res.data;
