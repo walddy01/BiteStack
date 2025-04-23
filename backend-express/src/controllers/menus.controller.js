@@ -314,7 +314,7 @@ const generarMenu = async (req, res) => {
       - **difficulty**: Difficulty level of the recipe (e.g., Fácil, Media, Difícil).
       - **prep_time**: Preparation time in minutes.
       - **ingredients**: Array of ingredients, each with:
-          - **ingredient**: Name of the ingredient.
+          - **ingredient**: Name of the ingredient. Must start with capital letter (e.g., "Arroz", "Leche", "Tomate").
           - **notes**: Additional details about the ingredient (optional).
           - **amount**: Numeric value indicating the quantity.
           - **unit**: **Use only units from the International System of Units (SI)** (grams, milliliters, liters).
@@ -327,6 +327,7 @@ const generarMenu = async (req, res) => {
       ### Important Notes:
       - The recipe **must be in Spanish**.
       - **Field names MUST remain in English**, as specified above.
+      - **Ingredient names MUST start with capital letter** to maintain consistency.
       - Provide specific ingredient quantities and clear instructions.
       - Ensure that **nutritional values are calculated per serving** (divide total by number_of_servings).
       - **Use only International System of Units (SI) measurements**: grams (g), milliliters (ml), liters (l), and degrees Celsius (°C). Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit.
