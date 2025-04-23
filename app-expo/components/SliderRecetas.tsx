@@ -12,6 +12,7 @@ import {
   ScrollView,
   ViewToken,
 } from 'react-native';
+import { router } from 'expo-router';
 import {
   ChevronLeft,
   ChevronRight,
@@ -48,8 +49,8 @@ function obtenerNombreDia(cadenaFecha: string) {
   return dias[d.getDay()];
 }
 
-export default function SliderRecetas({ userId }: { userId: number }) {
-  const { menuData, cargando, error } = useObtenerMenuSemana(userId);
+export default function SliderRecetas({ userId, recargarRecetas }: { userId: number, recargarRecetas?: number }) {
+  const { menuData, cargando, error } = useObtenerMenuSemana(userId, recargarRecetas);
   const [indiceActual, setIndiceActual] = useState(0);
   const flatListRef = useRef<FlatList<number>>(null);
 
@@ -96,7 +97,18 @@ export default function SliderRecetas({ userId }: { userId: number }) {
   const arrayDias = useMemo(() => Array.from({ length: 7 }, (_, i) => i), []);
 
   const renderizarTarjetaReceta = (receta: Recipe, esUltima: boolean) => (
-    <View key={receta.id} style={[styles.recipeCard, !esUltima && styles.recipeCardMargin]}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      key={receta.id}
+      style={[styles.recipeCard, !esUltima && styles.recipeCardMargin]}
+      onPress={() => {
+        const id = receta.id.toString();
+        router.push({
+          pathname: "/receta/[id]",
+          params: { id }
+        } as any);
+      }}
+    >
       <View style={styles.recipeHeader}>
         {obtenerIconoComida(receta.mealType)}
         <Text style={styles.recipeTitle} numberOfLines={1}>{receta.title}</Text>
@@ -116,7 +128,7 @@ export default function SliderRecetas({ userId }: { userId: number }) {
           <Text style={styles.infoText}>{receta.difficulty}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderizarElementoDia = ({ item: indiceDia }: { item: number }) => {
@@ -253,6 +265,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.gray,
     lineHeight: 22,
+    marginBottom: 12,
   },
   recipeInfo: {
     flexDirection: 'row',

@@ -162,7 +162,7 @@ export default function Preferencias({
 								Alergias
 							</Text>
 							<Text style={[styles.preferenceValue, styles.text]}>
-								{preferencias.alergias !== ''
+								{preferencias.alergias !== '' && preferencias.alergias !== null
 									? preferencias.alergias
 									: 'Ninguna'}
 							</Text>

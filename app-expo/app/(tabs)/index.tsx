@@ -9,7 +9,7 @@ import useObtenerPreferencias from '@/hooks/useObtenerPreferencias'
 import useGenerarMenu from '@/hooks/useGenerarMenu'
 
 export default function Index() {
-
+  const [recargarRecetas, setRecargarRecetas] = useState(0);
   const [editarPreferencias, setEditarPreferencias] = useState(false)
 
   const [comidasActivas, setComidasActivas] = useState({
@@ -28,7 +28,6 @@ export default function Index() {
 
   const [preferenciasOriginales, setPreferenciasOriginales] = useState(preferencias)
 
-
   const {
     preferencias: preferenciasDB,
     cargando: cargandoObtenerPrefs,
@@ -42,14 +41,12 @@ export default function Index() {
     }
   }, [preferenciasDB])
 
-
   const {
     actualizar: actualizarPrefs,
     cargando: cargandoActualizarPrefs,
     error: errorActualizarPrefs,
     respuesta: respuestaActualizarPrefs
   } = useActualizarPreferencias()
-
 
   const handleChange = (campo: string, valor: string) => {
     setPreferencias((prevState) => ({
@@ -78,9 +75,15 @@ export default function Index() {
 
   const {generar, cargando: cargandoGenerarMenu, error: errorGenerarMenu, respuesta: respuestaGenerarMenu} = useGenerarMenu()
   
-  const generarMenu =  () => {
+  const generarMenu = async () => {
     console.log(comidasActivas)
-    generar(1, comidasActivas)
+    try {
+      await generar(1, comidasActivas);
+      // Forzar actualización del SliderRecetas
+      setRecargarRecetas(prev => prev + 1);
+    } catch (error) {
+      console.error('Error al generar menú:', error);
+    }
   };
   
   useEffect(() => {
@@ -125,7 +128,7 @@ export default function Index() {
             generarMenu={generarMenu}
           />
 
-          <SliderRecetas userId={1}  />
+          <SliderRecetas userId={1} recargarRecetas={recargarRecetas} />
 
         </ScrollView>
       </SafeAreaView>
