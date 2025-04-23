@@ -25,7 +25,7 @@ interface APIResponse {
   data: DayMenu;
 }
 
-export default function useObtenerMenuSemana(userId: number) {
+export default function useObtenerMenuSemana(userId: number, recargarRecetas?: number) {
   const [menuData, setMenuData] = useState<DayMenu | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -57,7 +57,7 @@ export default function useObtenerMenuSemana(userId: number) {
     };
 
     fetchMenuSemana();
-  }, [userId]);
+  }, [userId, recargarRecetas]); // Agregamos recargarRecetas como dependencia
 
   return {
     menuData,
