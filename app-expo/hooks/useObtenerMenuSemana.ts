@@ -11,13 +11,13 @@ export interface Recipe {
   servings: number;
   difficulty: string;
   date: string;     // YYYY-MM-DD
-  mealType: string; // tipo_comida que devuelve la API
+  mealType: string;
 }
 
 export interface DayMenu {
   menuId: number;
-  menuDate: string;  // YYYY-MM-DD (lunes de la semana)
-  recipes: Recipe[]; // todas las recetas de la semana, cada una con mealType
+  menuDate: string;  
+  recipes: Recipe[];
 }
 
 interface APIResponse {
@@ -39,8 +39,7 @@ export default function useObtenerMenuSemana(userId: number, recargarRecetas?: n
         const res = await axios.get<APIResponse>(
           `http://192.168.0.33:3000/api/menus/menuSemana/${userId}`
         );
-        // la API devuelve DayMenu con recipes[].mealType
-        // Comprobar si data es un array vacío o no es un objeto válido
+
         if (res.data.data?.menuId) {
           setMenuData(res.data.data);
         } else {
@@ -57,7 +56,7 @@ export default function useObtenerMenuSemana(userId: number, recargarRecetas?: n
     };
 
     fetchMenuSemana();
-  }, [userId, recargarRecetas]); // Agregamos recargarRecetas como dependencia
+  }, [userId, recargarRecetas]);
 
   return {
     menuData,

@@ -28,7 +28,7 @@ import useObtenerMenuSemana, { DayMenu, Recipe } from '../hooks/useObtenerMenuSe
 
 const { width: windowWidth } = Dimensions.get('window');
 
-/** Devuelve el icono según el tipo de comida que viene de la API */
+/** Icono según tipo de comida */
 function obtenerIconoComida(tipoComida: string) {
   switch (tipoComida) {
     case 'Desayuno':
@@ -42,7 +42,6 @@ function obtenerIconoComida(tipoComida: string) {
   }
 }
 
-/** Nombres de días de la semana */
 function obtenerNombreDia(cadenaFecha: string) {
   const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const d = new Date(cadenaFecha);
@@ -54,7 +53,7 @@ export default function SliderRecetas({ userId, recargarRecetas }: { userId: num
   const [indiceActual, setIndiceActual] = useState(0);
   const flatListRef = useRef<FlatList<number>>(null);
 
-  // Iniciar en el día correcto al cargar los datos
+  // Inicializar el índice actual al cargar el menú
   useEffect(() => {
     if (!menuData) return;
     const [año, mes, dia] = menuData.menuDate.split('-').map(Number);
@@ -254,10 +253,10 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
-    marginBottom: 0, // Quitamos el margen base
+    marginBottom: 0,
   },
   recipeCardMargin: {
-    marginBottom: 20, // Solo aplicamos margen a las que no son la última
+    marginBottom: 20,
   },
   recipeHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 },
   recipeTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: colors.black },
