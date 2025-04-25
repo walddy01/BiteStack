@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
 });
 
-// formatear feccha
+// formatear fecha
 function formatearFecha(fecha) {
   const d = new Date(fecha);
   const year = d.getFullYear();
