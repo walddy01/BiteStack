@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
+/** POST /usuarios/login */
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -51,6 +52,7 @@ const login = async (req, res) => {
     }
 };
 
+/** POST /usuarios/registro */
 const registro = async (req, res) => {
     try {
         const { nombre, apellidos, email, password, dieta, porciones, preferencias_adicionales } = req.body;
@@ -88,6 +90,7 @@ const registro = async (req, res) => {
     }
 };
 
+/** GET /usuarios */
 const getAllUsuarios = async (req, res) => {
     try {
         const listaUsuarios = await prisma.usuario.findMany({
@@ -132,6 +135,7 @@ const getAllUsuarios = async (req, res) => {
     }
 };
 
+/** GET /usuarios/:id */
 const getUsuario = async (req, res) => {
     try {
         const idUsuario = parseInt(req.params.id);
@@ -183,6 +187,7 @@ const getUsuario = async (req, res) => {
     }
 };
 
+/** PATCH /usuarios/:id */
 const updateUsuario = async (req, res) => {
     try {
         const idUsuario = parseInt(req.params.id);
@@ -222,6 +227,7 @@ const updateUsuario = async (req, res) => {
     }
 };
 
+/** GET /usuarios/activar/:id */
 const activarDesactivarUsuario = async (req, res) => {
     try {
         const idUsuario = parseInt(req.params.id);
@@ -243,6 +249,7 @@ const activarDesactivarUsuario = async (req, res) => {
     }
 };
 
+/** GET /usuarios/admin/:id */
 const activarDesactivarAdmin = async (req, res) => {
     try {
         const idUsuario = parseInt(req.params.id);

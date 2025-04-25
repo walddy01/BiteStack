@@ -78,7 +78,7 @@ model Receta {
   descripcion       String?         @db.VarChar(255)
   numero_raciones   Int
   dificultad        String          @db.VarChar(50)
-  tiempo_prep       Int?            // Tiempo de preparación en minutos
+  tiempo_prep       Int?
   instrucciones     String          @db.Text
   calorias          Int?
   proteinas         Int?

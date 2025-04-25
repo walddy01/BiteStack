@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
 });
 
-/** Devuelve el lunes de la semana de la fecha dada */
+//  Devuelve el lunes de la semana de la fecha dada 
 function obtenerInicioSemana(fecha) {
   const d = new Date(fecha);
   const dia = d.getDay();
@@ -17,7 +17,7 @@ function obtenerInicioSemana(fecha) {
   return new Date(d.setDate(diff));
 }
 
-/** Formatea Date a "YYYY-MM-DD" */
+// Formatea Date a "YYYY-MM-DD"
 function formatearFecha(fecha) {
   const d = new Date(fecha);
   const year = d.getFullYear();
@@ -47,7 +47,7 @@ const SchemaReceta = z.object({
   fat_per_serving: z.number(),
 });
 
-/** GET /menus/usuario/:id */
+/** GET /menus/:id */
 const getMenusUsuario = async (req, res) => {
   try {
     const idUsuario = parseInt(req.params.id, 10);
@@ -304,7 +304,7 @@ const generarMenu = async (req, res) => {
       });
     }
 
-    // Función interna para generar receta con IA
+    
     const generarRecetaAI = async prompt => {
       const systemPrompt = `
       Generate a recipe in JSON format with the following structure:
@@ -351,7 +351,7 @@ const generarMenu = async (req, res) => {
       recetasGeneradasIA.push(...recetasDia);
     }
 
-    // Transacción principal: crear menú, lista, recetas y programaciones
+    // Transacción
     const { nuevoMenu, nuevaLista, recetasGuardadas } = await prisma.$transaction(async tx => {
       const menuCreado = await tx.menu.create({
         data: { usuario_id: idUsuario, fecha_inicio_semana: fechaInicioSemana },
@@ -397,10 +397,10 @@ const generarMenu = async (req, res) => {
 
       return { nuevoMenu: menuCreado, nuevaLista: listaCreada, recetasGuardadas: recetasTemporales };
     }, {
-      timeout: 120000 // Tiempo de espera de 2 minutos para la transacción
+      timeout: 120000 // Tiempo de espera de 2 minutos
     });
 
-    // Insertar ingredientes únicos en tabla Ingrediente
+    // Insertar ingredientes en tabla Ingrediente
     const mapaIngredientesUnicos = new Map();
     recetasGeneradasIA.forEach(receta => {
       receta.ingredients.forEach(ingrediente => {
@@ -416,7 +416,7 @@ const generarMenu = async (req, res) => {
       });
     }
 
-    // Obtener IDs de ingredientes
+    // Obtener ids de ingredientes
     const ingredientesEnDB = await prisma.ingrediente.findMany({
       where: { nombre: { in: [...mapaIngredientesUnicos.keys()] } },
       select: { id: true, nombre: true },

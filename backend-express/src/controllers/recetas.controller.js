@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
 });
 
-/** Formatea un Date a "YYYY-MM-DD" */
+// formatear feccha
 function formatearFecha(fecha) {
   const d = new Date(fecha);
   const year = d.getFullYear();
@@ -18,7 +18,6 @@ function formatearFecha(fecha) {
   return `${year}-${month}-${day}`;
 }
 
-// Schemas Zod para validar respuesta de IA
 const SchemaIngrediente = z.object({
   ingredient: z.string(),
   notes: z.string().optional(),
@@ -42,8 +41,6 @@ const SchemaReceta = z.object({
 
 /**
  * GET /recetas/favoritas/:id
- * Obtiene las recetas favoritas de un usuario,
- * e incluye sus ingredientes y programaciones (fecha + tipo_comida).
  */
 const getRecetasFavoritas = async (req, res) => {
   try {
@@ -95,7 +92,6 @@ const getRecetasFavoritas = async (req, res) => {
 
 /**
  * PATCH /recetas/favorito/:id
- * Alterna el estado "favorito" de una receta dada su ID.
  */
 const alternarFavorito = async (req, res) => {
   try {
@@ -119,7 +115,6 @@ const alternarFavorito = async (req, res) => {
 
 /**
  * GET /receta/:receta_id
- * Obtiene una receta por su ID, incluyendo ingredientes y programaciones.
  */
 const getReceta = async (req, res) => {
   try {
@@ -176,7 +171,6 @@ const getReceta = async (req, res) => {
 
 /**
  * GET /receta/mock
- * Genera una receta de prueba en el formato esperado.
  */
 const generarRecetaMock = async (req, res) => {
   try {
@@ -206,10 +200,7 @@ const generarRecetaMock = async (req, res) => {
   }
 };
 
-/**
- * POST /receta/ai/:userPrompt
- * Genera una receta usando la API de Gemini, con validación Zod.
- */
+/** POST /receta/ai/:userPrompt */
 const generarRecetaAI = async (req, res) => {
   try {
     const { userPrompt } = req.params;
