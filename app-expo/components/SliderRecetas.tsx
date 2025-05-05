@@ -1,30 +1,30 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  SafeAreaView,
-  StatusBar,
-  ActivityIndicator,
-  ScrollView,
-  ViewToken,
-} from 'react-native';
 import { router } from 'expo-router';
 import {
+  ChefHat,
   ChevronLeft,
   ChevronRight,
   Clock,
-  Users,
-  ChefHat,
   Coffee,
-  UtensilsCrossed,
   Moon,
+  Users,
+  UtensilsCrossed,
 } from 'lucide-react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewToken,
+} from 'react-native';
+import useObtenerMenuSemana, { Recipe } from '../hooks/useObtenerMenuSemana'; // DayMenu
 import { colors } from '../utils/colors';
-import useObtenerMenuSemana, { DayMenu, Recipe } from '../hooks/useObtenerMenuSemana';
 
 const { width: windowWidth } = Dimensions.get('window');
 
