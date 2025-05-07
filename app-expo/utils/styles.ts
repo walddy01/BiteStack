@@ -17,6 +17,7 @@ const spacing = {
   lg: 16,
   xl: 20,
   xxl: 30,
+  xxxl: 45,
 };
 
 const radius = {
@@ -50,7 +51,8 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   header: {
-    padding: spacing.xl,
+    paddingTop: spacing.xxxl,
+    paddingHorizontal: spacing.xl,
   },
   title: {
     color: colors.black,
