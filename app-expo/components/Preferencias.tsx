@@ -1,7 +1,7 @@
-import { View, Text, TextInput, Pressable } from 'react-native';
 import { Check, Pencil, WandSparkles, X } from 'lucide-react-native';
-import { colors } from '../utils/colors';
-import { styles } from '../utils/styles';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { colors } from '../styles/colors';
+import { styles } from '../styles/styles';
 
 interface Props {
 	preferencias: {

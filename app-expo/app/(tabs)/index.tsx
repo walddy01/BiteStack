@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react'
 import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
-import { useState, useEffect } from 'react'
-import { styles } from '../../utils/styles'
+import { styles } from '../../styles/styles'
 
 import Preferencias from '@/components/Preferencias'
 import SliderRecetas from '@/components/SliderRecetas'
 import useActualizarPreferencias from '@/hooks/useActualizarPreferencias'
-import useObtenerPreferencias from '@/hooks/useObtenerPreferencias'
 import useGenerarMenu from '@/hooks/useGenerarMenu'
+import useObtenerPreferencias from '@/hooks/useObtenerPreferencias'
 
 export default function Index() {
   const [recargarRecetas, setRecargarRecetas] = useState(0);

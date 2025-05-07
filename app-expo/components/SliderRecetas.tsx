@@ -24,7 +24,7 @@ import {
   ViewToken,
 } from 'react-native';
 import useObtenerMenuSemana, { Recipe } from '../hooks/useObtenerMenuSemana'; // DayMenu
-import { colors } from '../utils/colors';
+import { colors } from '../styles/colors';
 
 const { width: windowWidth } = Dimensions.get('window');
 

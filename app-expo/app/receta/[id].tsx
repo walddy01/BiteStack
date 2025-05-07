@@ -1,7 +1,7 @@
 import useMarcarFavorito from '@/hooks/useMarcarFavorito';
 import useObtenerReceta from '@/hooks/useObtenerReceta';
-import { colors } from '@/utils/colors';
-import { radius, shadow, spacing, TYPOGRAPHY } from '@/utils/styles';
+import { colors } from '@/styles/colors';
+import { radius, shadow, spacing, TYPOGRAPHY } from '@/styles/styles';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, ChefHat, Clock, Cookie, Droplets, Dumbbell, Flame, Heart, Users } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
