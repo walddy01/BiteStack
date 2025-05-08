@@ -1,93 +1,120 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
+const { supabaseAdmin } = require("../../lib/supabaseAdmin.js");
+
 
 /** POST /usuarios/login */
-const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// const login = async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email y contraseña son requeridos" });
-        }
+//         if (!email || !password) {
+//             return res.status(400).json({ error: "Email y contraseña son requeridos" });
+//         }
 
-        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
+//         const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
 
-        if (!usuarioExistente) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
+//         if (!usuarioExistente) {
+//             return res.status(401).json({ error: "Credenciales inválidas" });
+//         }
 
-        if (!usuarioExistente.activo) {
-            return res.status(401).json({ error: 'La cuenta está desactivada.' });
-        }
+//         if (!usuarioExistente.activo) {
+//             return res.status(401).json({ error: 'La cuenta está desactivada.' });
+//         }
 
-        const passwordMatch = await bcrypt.compare(password, usuarioExistente.password);
+//         const passwordMatch = await bcrypt.compare(password, usuarioExistente.password);
 
-        if (!passwordMatch) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
+//         if (!passwordMatch) {
+//             return res.status(401).json({ error: "Credenciales inválidas" });
+//         }
 
-        // Mapeo de los campos del usuario a etiquetas en inglés
-        res.json({
-            message: "Inicio de sesión exitoso",
-            data: {
-                id: usuarioExistente.id,
-                firstName: usuarioExistente.nombre,
-                lastName: usuarioExistente.apellidos,
-                email: usuarioExistente.email,
-                admin: usuarioExistente.admin,
-                active: usuarioExistente.activo,
-                allergies: usuarioExistente.alergias,
-                calories: usuarioExistente.calorias,
-                diet: usuarioExistente.dieta,
-                servings: usuarioExistente.porciones,
-                additionalPreferences: usuarioExistente.preferencias_adicionales,
-                createdAt: usuarioExistente.created_at,
-                updatedAt: usuarioExistente.updated_at
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor", details: error.message });
-    }
-};
+//         // Mapeo de los campos del usuario a etiquetas en inglés
+//         res.json({
+//             message: "Inicio de sesión exitoso",
+//             data: {
+//                 id: usuarioExistente.id,
+//                 firstName: usuarioExistente.nombre,
+//                 lastName: usuarioExistente.apellidos,
+//                 email: usuarioExistente.email,
+//                 admin: usuarioExistente.admin,
+//                 active: usuarioExistente.activo,
+//                 allergies: usuarioExistente.alergias,
+//                 calories: usuarioExistente.calorias,
+//                 diet: usuarioExistente.dieta,
+//                 servings: usuarioExistente.porciones,
+//                 additionalPreferences: usuarioExistente.preferencias_adicionales,
+//                 createdAt: usuarioExistente.created_at,
+//                 updatedAt: usuarioExistente.updated_at
+//             }
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: "Error en el servidor", details: error.message });
+//     }
+// };
 
 /** POST /usuarios/registro */
 const registro = async (req, res) => {
     try {
-        const { nombre, apellidos, email, password, dieta, porciones, preferencias_adicionales } = req.body;
-
-        if (!nombre || !apellidos || !email || !password || password.length < 8) {
-            return res.status(400).json({ error: "Datos inválidos o incompletos" });
+        const {
+          email,
+          password,
+          nombre,
+          apellidos,
+          dieta,
+          porciones,
+          preferencias_adicionales,
+        } = req.body;
+    
+        // 1) Validación
+        if (
+          !email ||
+          !password ||
+          password.length < 8 ||
+          !nombre ||
+          !apellidos
+        ) {
+          return res
+            .status(400)
+            .json({ error: "Datos inválidos o incompletos" });
         }
-
-        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
-        if (usuarioExistente) {
-            return res.status(409).json({ error: "El email ya está registrado" });
+    
+        // 2) Crear usuario en Supabase Auth
+        const { data: sbData, error: sbError } =
+          await supabaseAdmin.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true, // marcado como verificado
+            user_metadata: { nombre, apellidos },
+          });
+        if (sbError) {
+          return res.status(409).json({ error: sbError.message });
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const nuevoUsuario = await prisma.usuario.create({
-            data: {
-                nombre,
-                apellidos,
-                email,
-                password: hashedPassword,
-                dieta,
-                porciones,
-                preferencias_adicionales
-            },
+    
+        // 3) Guardar registro en Prisma
+        await prisma.usuario.create({
+          data: {
+            id: sbData.user.id,
+            email,
+            nombre,
+            apellidos,
+            dieta,
+            porciones,
+            preferencias_adicionales,
+          },
         });
-
-        res.status(201).json({
-            message: "Registro exitoso",
-            data: { id: nuevoUsuario.id }
+    
+        return res.status(201).json({
+          message: "Registro exitoso",
+          data: { id: sbData.user.id },
         });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor", details: error.message });
-    }
+      } catch (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .json({ error: "Error en servidor", details: err.message });
+      }
 };
 
 /** GET /usuarios */
@@ -272,7 +299,7 @@ const activarDesactivarAdmin = async (req, res) => {
 };
 
 module.exports = {
-    login,
+    // login,
     registro,
     getAllUsuarios,
     getUsuario,

@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model IngredienteListaCompra {
+  id              Int         @id @default(autoincrement())
+  ingrediente_id  Int
+  lista_compra_id Int
+  adquirido       Boolean     @default(false)
+  created_at      DateTime?   @default(now())
+  updated_at      DateTime?   @updatedAt
+  ingrediente     Ingrediente @relation(fields: [ingrediente_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lista_compra    ListaCompra @relation(fields: [lista_compra_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([ingrediente_id])
+  @@index([lista_compra_id])
+}
+
+model Ingrediente {
+  id                      Int                     @id @default(autoincrement())
+  nombre                  String                  @unique @db.VarChar(255)
+  created_at              DateTime?               @default(now())
+  updated_at              DateTime?               @updatedAt
+  ingredienteListaCompra  IngredienteListaCompra[]
+  recetaIngrediente       RecetaIngrediente[]
+}
+
+model ListaCompra {
+  id                     Int                     @id @default(autoincrement())
+  menu_id                Int
+  created_at             DateTime?               @default(now())
+  updated_at             DateTime?               @updatedAt
+  ingredienteListaCompra IngredienteListaCompra[]
+  menu                   Menu                    @relation(fields: [menu_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([menu_id])
+}
+
+model Menu {
+  id                  Int         @id @default(autoincrement())
+  usuario_id          Int
+  fecha_inicio_semana DateTime    @db.Date
+  created_at          DateTime?   @default(now())
+  updated_at          DateTime?   @updatedAt
+  lista_compras       ListaCompra[]
+  usuario             Usuario     @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  recetasProgramadas  MenuRecetaDia[]
+
+  @@index([usuario_id])
+}
+
+model RecetaIngrediente {
+  id             Int         @id @default(autoincrement())
+  receta_id      Int
+  ingrediente_id Int
+  cantidad       String      @db.VarChar(255)
+  unidad         String      @db.VarChar(255)
+  nota           String?     @db.VarChar(255)
+  created_at     DateTime?   @default(now())
+  updated_at     DateTime?   @updatedAt
+
+  ingrediente    Ingrediente @relation(fields: [ingrediente_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receta         Receta      @relation(fields: [receta_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([ingrediente_id])
+  @@index([receta_id])
+}
+
+model Receta {
+  id                Int             @id @default(autoincrement())
+  titulo            String          @db.VarChar(255)
+  descripcion       String?         @db.VarChar(255)
+  numero_raciones   Int
+  dificultad        String          @db.VarChar(50)
+  tiempo_prep       Int?
+  instrucciones     String          @db.Text
+  calorias          Int?
+  proteinas         Int?
+  carbohidratos     Int?
+  grasas            Int?
+  favorito          Boolean         @default(false)
+  created_at        DateTime?       @default(now())
+  updated_at        DateTime?       @updatedAt
+  recetaIngrediente RecetaIngrediente[]
+  usuario_id        Int
+  usuario           Usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  programacionesMenu MenuRecetaDia[]
+
+  @@index([usuario_id])
+}
+
+model MenuRecetaDia {
+  id           Int       @id @default(autoincrement())
+  menu_id      Int
+  receta_id    Int
+  fecha        DateTime  @db.Date
+  tipo_comida  String
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @updatedAt
+
+  menu   Menu   @relation(fields: [menu_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receta Receta @relation(fields: [receta_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([menu_id, fecha, tipo_comida])
+  @@index([menu_id])
+  @@index([receta_id])
+  @@index([fecha])
+}
+
+model Usuario {
+  id                        Int         @id @default(autoincrement())
+  nombre                    String      @db.VarChar(255)
+  apellidos                 String      @db.VarChar(255)
+  email                     String      @unique @db.VarChar(255)
+  password                  String      @db.VarChar(255)
+  alergias                  String?     @db.VarChar(255)
+  calorias                  Int?
+  dieta                     String?     @db.VarChar(255)
+  porciones                 Int?
+  preferencias_adicionales  String?     @db.VarChar(255)
+  admin                     Boolean     @default(false)
+  activo                    Boolean     @default(true)
+  created_at                DateTime?   @default(now())
+  updated_at                DateTime?   @updatedAt
+  menus                      Menu[]
+  recetas                   Receta[]
+}
