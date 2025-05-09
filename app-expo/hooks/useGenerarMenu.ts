@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface comidasActivas {
-    desayuno: boolean;
-    almuerzo: boolean;
-    cena: boolean;
+  desayuno: boolean;
+  almuerzo: boolean;
+  cena: boolean;
 }
 
 export default function useGenerarMenu() {
@@ -12,12 +13,29 @@ export default function useGenerarMenu() {
   const [error, setError] = useState<null | Error>(null);
   const [respuesta, setRespuesta] = useState(null);
 
-  const generar = async (idUsuario: number, comidasActivas: comidasActivas) => {
+  const generar = async (comidasActivas: comidasActivas) => {
     setCargando(true);
     setError(null);
 
     try {
-      const res = await axios.post(`http://192.168.0.33:3000/api/menus/generarMenu/${idUsuario}`, comidasActivas);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setError(new Error('Usuario no autenticado'));
+        setCargando(false);
+        return;
+      }
+
+      const res = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/menus/generar`,
+        comidasActivas,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setRespuesta(res.data);
       return res.data;
     } catch (err: any) {

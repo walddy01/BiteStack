@@ -3,7 +3,7 @@ import useObtenerReceta from '@/hooks/useObtenerReceta';
 import { colors } from '@/styles/colors';
 import { radius, shadow, spacing, TYPOGRAPHY } from '@/styles/styles';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, ChefHat, Clock, Cookie, Droplets, Dumbbell, Flame, Heart, Users } from 'lucide-react-native';
+import { ArrowLeft, ChefHat, Clock, Cookie, Droplets, Dumbbell, Flame, Heart, RefreshCw, Users } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -73,16 +73,24 @@ export default function DetalleRecetaScreen() {
             >
               <ArrowLeft size={24} color={colors.black} />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.favoriteButton, isFavorite && styles.favoriteButtonActive]}
-              onPress={toggleFavorite}
-            >
-              <Heart
-                size={24}
-                color={isFavorite ? colors.white : colors.red}
-                fill={isFavorite ? colors.red : 'none'}
-              />
-            </TouchableOpacity>
+            <View style={styles.rightHeaderActions}>
+              <TouchableOpacity
+                style={styles.regenerateButton}
+                onPress={() => console.log('Regenerar receta (funcionalidad pendiente)')}
+              >
+                <RefreshCw size={24} color={colors.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.favoriteButton, isFavorite && styles.favoriteButtonActive]}
+                onPress={toggleFavorite}
+              >
+                <Heart
+                  size={24}
+                  color={isFavorite ? colors.white : colors.red}
+                  fill={isFavorite ? colors.red : 'none'}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -198,6 +206,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  rightHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   backButton: {
     width: 40,
     height: 40,
@@ -205,6 +217,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  regenerateButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.lighterGray,
+    borderRadius: radius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing.sm,
   },
   favoriteButton: {
     width: 40,

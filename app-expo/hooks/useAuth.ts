@@ -1,16 +1,27 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
+// Hook personalizado para autenticación
 export function useAuth() {
   const [session, setSession] = useState<any>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, ses) => setSession(ses)
+      (_event, ses) => {
+        setSession(ses);
+        if (ses) {
+          console.log("Access Token:", ses.access_token);
+        }
+      }
     );
+
     return () => listener.subscription.unsubscribe();
   }, []);
 
@@ -45,6 +56,7 @@ export function useAuth() {
     }
   };
 
+  // Ahora usando axios para el registro
   const signUpApi = async (payload: {
     email: string;
     password: string;
@@ -57,26 +69,23 @@ export function useAuth() {
     setCargando(true);
     setError(null);
     try {
-      const response = await fetch(
-        `http://192.168.0.33:3000/api/usuarios/registro`,
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/usuarios/registro`,
+        payload,
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
         }
       );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al registrar usuario");
-      }
-
-      return data;
+      return response.data;
     } catch (err: any) {
-      setError(err.message);
+      // axios maneja los errores diferente a fetch
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError(err.message);
+      }
       return null;
     } finally {
       setCargando(false);

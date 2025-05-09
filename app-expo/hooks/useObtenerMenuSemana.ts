@@ -1,7 +1,6 @@
-// hooks/useObtenerMenuSemana.ts
-
-import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 export interface Recipe {
   id: number;
@@ -25,7 +24,7 @@ interface APIResponse {
   data: DayMenu;
 }
 
-export default function useObtenerMenuSemana(userId: number, recargarRecetas?: number) {
+export default function useObtenerMenuSemana(recargarRecetas?: number) {
   const [menuData, setMenuData] = useState<DayMenu | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -36,8 +35,22 @@ export default function useObtenerMenuSemana(userId: number, recargarRecetas?: n
       setError(null);
 
       try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+
+        if (!token) {
+          setError(new Error('Usuario no autenticado. No se encontró token de acceso.'));
+          setCargando(false);
+          return;
+        }
+
         const res = await axios.get<APIResponse>(
-          `http://192.168.0.33:3000/api/menus/menuSemana/${userId}`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/menus/semana`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (res.data.data?.menuId) {
@@ -56,7 +69,7 @@ export default function useObtenerMenuSemana(userId: number, recargarRecetas?: n
     };
 
     fetchMenuSemana();
-  }, [userId, recargarRecetas]);
+  }, [recargarRecetas]);
 
   return {
     menuData,

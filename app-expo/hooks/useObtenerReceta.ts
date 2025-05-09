@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface Ingredient {
   id: number;
@@ -48,20 +49,35 @@ export default function useObtenerReceta(recetaId: number) {
   const [error, setError] = useState<null | Error>(null);
 
   useEffect(() => {
-    const fetchReceta = async () => {
-      if (!recetaId) {
-        setReceta(null);
-        setCargando(false);
-        setError(null);
-        return;
-      }
+    if (!recetaId) {
+      setReceta(null);
+      setCargando(false);
+      setError(null);
+      return;
+    }
 
+    const fetchReceta = async () => {
       setCargando(true);
       setError(null);
 
       try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+
+        if (!token) {
+          setError(new Error('Usuario no autenticado para obtener receta.'));
+          setReceta(null);
+          setCargando(false);
+          return;
+        }
+
         const res = await axios.get<APIResponse>(
-          `http://192.168.0.33:3000/api/recetas/${recetaId}`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/recetas/${recetaId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (res.data.data) {

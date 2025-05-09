@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface APIResponse {
   message: string;
@@ -8,9 +9,7 @@ interface APIResponse {
 export default function useMarcarFavorito() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<null | Error>(null);
-  const [mensajeConfirmacion, setMensajeConfirmacion] = useState<string | null>(
-    null
-  );
+  const [mensajeConfirmacion, setMensajeConfirmacion] = useState<string | null>(null);
 
   const marcarFavorito = async (recetaId: number) => {
     if (!recetaId) {
@@ -24,10 +23,23 @@ export default function useMarcarFavorito() {
     setMensajeConfirmacion(null);
 
     try {
-      // Asumo que la API de marcar/desmarcar favorito también es un endpoint GET
-      // y que el estado (marcar/desmarcar) se gestiona en el backend
-      const res = await axios.get<APIResponse>(
-        `http://192.168.0.33:3000/api/recetas/favorito/${recetaId}`
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setError(new Error('Usuario no autenticado'));
+        setCargando(false);
+        return;
+      }
+
+      const res = await axios.patch<APIResponse>(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/recetas/favorito/${recetaId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       setMensajeConfirmacion(res.data.message);

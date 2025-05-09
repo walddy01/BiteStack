@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
 });
 
-//  Devuelve el lunes de la semana de la fecha dada 
+// Devuelve el lunes de la semana de la fecha dada
 function obtenerInicioSemana(fecha) {
   const d = new Date(fecha);
   const dia = d.getDay();
@@ -47,10 +47,10 @@ const SchemaReceta = z.object({
   fat_per_serving: z.number(),
 });
 
-/** GET /menus/:id */
+/** GET /menus/ */
 const getMenusUsuario = async (req, res) => {
   try {
-    const idUsuario = parseInt(req.params.id, 10);
+    const idUsuario = req.user.id;
 
     const listaMenus = await prisma.menu.findMany({
       where: { usuario_id: idUsuario },
@@ -100,10 +100,10 @@ const getMenusUsuario = async (req, res) => {
   }
 };
 
-/** GET /menu/semana/usuario/:id */
+/** GET /menus/semana */
 const getMenuSemanaUsuario = async (req, res) => {
   try {
-    const idUsuario = parseInt(req.params.id, 10);
+    const idUsuario = req.user.id;
 
     const inicioSemana = obtenerInicioSemana(new Date());
     const fechaInicioSemana = new Date(formatearFecha(inicioSemana));
@@ -166,10 +166,10 @@ const getMenuSemanaUsuario = async (req, res) => {
   }
 };
 
-/** GET /listas-compra/usuario/:id */
+/** GET /menus/listascompra */
 const getListasCompraUsuario = async (req, res) => {
   try {
-    const idUsuario = parseInt(req.params.id, 10);
+    const idUsuario = req.user.id;
 
     const listaMenus = await prisma.menu.findMany({
       where: { usuario_id: idUsuario },
@@ -216,7 +216,7 @@ const getListasCompraUsuario = async (req, res) => {
   }
 };
 
-/** PATCH /lista/:idLista/ingrediente/:idIngrediente */
+/** PATCH /menus/listascompra/adquirido/:idLista/:idIngrediente */
 const alternarAdquirido = async (req, res) => {
   try {
     const idLista = parseInt(req.params.idLista, 10);
@@ -246,9 +246,9 @@ const alternarAdquirido = async (req, res) => {
   }
 };
 
-/** POST /generar-menu/:id */
+/** POST /menus/generar */
 const generarMenu = async (req, res) => {
-  const idUsuario = parseInt(req.params.id, 10);
+  const idUsuario = req.user.id;
 
   // Determinar tipos de comida
   let tiposComidaSeleccionados = [];
@@ -304,7 +304,6 @@ const generarMenu = async (req, res) => {
       });
     }
 
-    
     const generarRecetaAI = async prompt => {
       const systemPrompt = `
       Generate a recipe in JSON format with the following structure:

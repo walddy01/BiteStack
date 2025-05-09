@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "app-expo",
-    "slug": "app-expo",
+    "slug": "bitestack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -37,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dda28cb6-3444-4283-8e28-b4b3a03acf7b"
+      }
+    },
+    "owner": "walddy",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dda28cb6-3444-4283-8e28-b4b3a03acf7b"
     }
   }
 }

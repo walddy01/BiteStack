@@ -9,7 +9,7 @@ const openai = new OpenAI({
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
 });
 
-// formatear fecha
+// Formatea Date a "YYYY-MM-DD"
 function formatearFecha(fecha) {
   const d = new Date(fecha);
   const year = d.getFullYear();
@@ -24,7 +24,6 @@ const SchemaIngrediente = z.object({
   amount: z.number(),
   unit: z.string(),
 });
-
 const SchemaReceta = z.object({
   title: z.string(),
   description: z.string(),
@@ -39,12 +38,10 @@ const SchemaReceta = z.object({
   fat_per_serving: z.number(),
 });
 
-/**
- * GET /recetas/favoritas/:id
- */
+/** GET /recetas/favoritas */
 const getRecetasFavoritas = async (req, res) => {
   try {
-    const idUsuario = parseInt(req.params.id, 10);
+    const idUsuario = req.user.id;
 
     const recetas = await prisma.receta.findMany({
       where: { usuario_id: idUsuario, favorito: true },
@@ -90,13 +87,15 @@ const getRecetasFavoritas = async (req, res) => {
   }
 };
 
-/**
- * PATCH /recetas/favorito/:id
- */
+/** PATCH /recetas/favorito/:id */
 const alternarFavorito = async (req, res) => {
   try {
     const idReceta = parseInt(req.params.id, 10);
-    const receta = await prisma.receta.findUnique({ where: { id: idReceta } });
+
+    // Solo permite alternar recetas del usuario autenticado
+    const receta = await prisma.receta.findFirst({
+      where: { id: idReceta, usuario_id: req.user.id },
+    });
     if (!receta) {
       return res.status(404).json({ error: "Receta no encontrada" });
     }
@@ -113,15 +112,14 @@ const alternarFavorito = async (req, res) => {
   }
 };
 
-/**
- * GET /receta/:receta_id
- */
+/** GET /recetas/:receta_id */
 const getReceta = async (req, res) => {
   try {
     const idReceta = parseInt(req.params.receta_id, 10);
 
-    const recetaEncontrada = await prisma.receta.findUnique({
-      where: { id: idReceta },
+    // Solo permite ver recetas del usuario autenticado
+    const recetaEncontrada = await prisma.receta.findFirst({
+      where: { id: idReceta, usuario_id: req.user.id },
       include: {
         recetaIngrediente: { include: { ingrediente: true } },
         programacionesMenu: { select: { fecha: true, tipo_comida: true } },
@@ -169,9 +167,7 @@ const getReceta = async (req, res) => {
   }
 };
 
-/**
- * GET /receta/mock
- */
+/** GET /recetas/generarRecetaMock/:userPrompt */
 const generarRecetaMock = async (req, res) => {
   try {
     const recetaMock = {
@@ -200,7 +196,7 @@ const generarRecetaMock = async (req, res) => {
   }
 };
 
-/** POST /receta/ai/:userPrompt */
+/** GET /recetas/generarRecetaAI/:userPrompt */
 const generarRecetaAI = async (req, res) => {
   try {
     const { userPrompt } = req.params;

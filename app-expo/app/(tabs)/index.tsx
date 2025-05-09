@@ -1,16 +1,25 @@
-import { useEffect, useState } from 'react'
-import { SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
-import { styles } from '../../styles/styles'
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native';
+import { styles } from '../../styles/styles';
 
-import Preferencias from '@/components/Preferencias'
-import SliderRecetas from '@/components/SliderRecetas'
-import useActualizarPreferencias from '@/hooks/useActualizarPreferencias'
-import useGenerarMenu from '@/hooks/useGenerarMenu'
-import useObtenerPreferencias from '@/hooks/useObtenerPreferencias'
+import AlertPersonalizado from '@/components/AlertPersonalizado'; // Importar el nuevo componente
+import Preferencias from '@/components/Preferencias';
+import SliderRecetas from '@/components/SliderRecetas';
+import useActualizarPreferencias from '@/hooks/useActualizarPreferencias';
+import { useAuth } from '@/hooks/useAuth';
+import useGenerarMenu from '@/hooks/useGenerarMenu';
+import useObtenerPreferencias from '@/hooks/useObtenerPreferencias';
+import { colors } from '../../styles/colors';
 
 export default function Index() {
+  const { session } = useAuth();
   const [recargarRecetas, setRecargarRecetas] = useState(0);
   const [editarPreferencias, setEditarPreferencias] = useState(false)
+
+  // Estados para el AlertPersonalizado
+  const [alertaVisible, setAlertaVisible] = useState(false);
+  const [alertaMensaje, setAlertaMensaje] = useState('');
+  const [alertaTipo, setAlertaTipo] = useState<'exito' | 'error' | 'info'>('info');
 
   const [comidasActivas, setComidasActivas] = useState({
     desayuno: true,
@@ -32,7 +41,7 @@ export default function Index() {
     preferencias: preferenciasDB,
     cargando: cargandoObtenerPrefs,
     error: errorObtenerPrefs
-  } = useObtenerPreferencias(1)
+  } = useObtenerPreferencias()
 
   useEffect(() => {
     if (preferenciasDB) {
@@ -78,32 +87,64 @@ export default function Index() {
   const generarMenu = async () => {
     console.log(comidasActivas)
     try {
-      await generar(1, comidasActivas);
+      await generar(comidasActivas);
       // Forzar actualización del SliderRecetas
       setRecargarRecetas(prev => prev + 1);
     } catch (error) {
       console.error('Error al generar menú:', error);
     }
+
+    await generar(comidasActivas);
+      // Forzar actualización del SliderRecetas
+      setRecargarRecetas(prev => prev + 1);
   };
   
   useEffect(() => {
     if (cargandoGenerarMenu) {
-      alert('Generando menú...');
+      setAlertaMensaje('Generando menú...');
+      setAlertaTipo('info');
+      setAlertaVisible(true);
     }
   }, [cargandoGenerarMenu]);
   
   useEffect(() => {
     if (errorGenerarMenu) {
-      alert(errorGenerarMenu.message)
+      setAlertaMensaje(errorGenerarMenu.message);
+      setAlertaTipo('error');
+      setAlertaVisible(true);
     }
   }, [errorGenerarMenu])  
 
   useEffect(() => {
     if (respuestaGenerarMenu) {
-      alert('Menú generado con éxito');
-      console.log(respuestaGenerarMenu);
+      setAlertaMensaje('Menú generado con éxito');
+      setAlertaTipo('exito');
+      setAlertaVisible(true);
+      // console.log(respuestaGenerarMenu);
     }
   }, [respuestaGenerarMenu]);
+
+  if (cargandoObtenerPrefs) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.text, { marginTop: 10 }]}>Cargando preferencias...</Text>
+      </View>
+    );
+  }
+
+  // Pantalla de error si no está autenticado y no está cargando las preferencias
+  if (!session && !cargandoObtenerPrefs) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
+        <Text style={[styles.text, styles.bold, { color: colors.red, marginBottom: 10 }]}>Error de Autenticación</Text>
+        <Text style={[styles.text, { textAlign: 'center', paddingHorizontal: 20 }]}>
+          No estás autenticado. Por favor, inicia sesión para continuar.
+        </Text>
+        {/* Aquí podrías agregar un botón para redirigir a la pantalla de login */}
+      </View>
+    );
+  }
 
   return (
     <>
@@ -112,7 +153,7 @@ export default function Index() {
         <ScrollView>
           <View style={styles.header}>
             <Text style={styles.title}>Tu Plan Semanal</Text>
-            <Text style={styles.subtitle}>Buenos días, walddy</Text>
+            <Text style={styles.subtitle}>Buenos días, {session?.user?.user_metadata?.nombre}</Text>
           </View>
 
           <Preferencias
@@ -128,9 +169,15 @@ export default function Index() {
             generarMenu={generarMenu}
           />
 
-          <SliderRecetas userId={1} recargarRecetas={recargarRecetas} />
+          <SliderRecetas recargarRecetas={recargarRecetas} />
 
         </ScrollView>
+        <AlertPersonalizado 
+          visible={alertaVisible}
+          mensaje={alertaMensaje}
+          tipo={alertaTipo}
+          onClose={() => setAlertaVisible(false)}
+        />
       </SafeAreaView>
     </>
   )

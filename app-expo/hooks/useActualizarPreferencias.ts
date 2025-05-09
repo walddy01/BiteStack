@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface Preferencias {
   dieta: string;
@@ -19,12 +20,30 @@ export default function useActualizarPreferencias() {
     setError(null);
 
     try {
-      const res = await axios.patch('http://192.168.0.33:3000/api/usuarios/1', preferencias);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setError(new Error('Usuario no autenticado'));
+        setCargando(false);
+        return;
+      }
+
+      const res = await axios.patch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/usuarios/perfil`,
+        preferencias,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setRespuesta(res.data);
       return res.data;
     } catch (err: any) {
-      setError(err);
-      console.error('Error al actualizar preferencias:', err);
+      const mensaje = err.response?.data?.error || err.message || 'Error al actualizar preferencias';
+      setError(new Error(mensaje));
+      console.error('Error al actualizar preferencias:', mensaje);
     } finally {
       setCargando(false);
     }

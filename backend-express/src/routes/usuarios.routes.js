@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const usuariosController = require("../controllers/usuarios.controller");
+const checkAuth = require("../../middleware/checkAuth.js");
 
-// router.post("/login", usuariosController.login);
+// Registro público
 router.post("/registro", usuariosController.registro);
-router.get("/", usuariosController.getAllUsuarios);
-router.get("/:id", usuariosController.getUsuario);
-router.patch("/:id", usuariosController.updateUsuario);
-router.get("/activar/:id", usuariosController.activarDesactivarUsuario);
-router.get("/admin/:id", usuariosController.activarDesactivarAdmin);
+
+// Rutas protegidas (requieren Bearer token)
+router.get("/perfil", checkAuth, usuariosController.getPerfil);
+router.patch("/perfil", checkAuth, usuariosController.updatePerfil);
+
+// (Opcional) Listar todos los usuarios (solo para pruebas/desarrollo)
+router.get("/", checkAuth, usuariosController.getAllUsuarios);
 
 module.exports = router;

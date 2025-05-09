@@ -48,8 +48,8 @@ function obtenerNombreDia(cadenaFecha: string) {
   return dias[d.getDay()];
 }
 
-export default function SliderRecetas({ userId, recargarRecetas }: { userId: number, recargarRecetas?: number }) {
-  const { menuData, cargando, error } = useObtenerMenuSemana(userId, recargarRecetas);
+export default function SliderRecetas({ recargarRecetas }: { recargarRecetas?: number }) {
+  const { menuData, cargando, error } = useObtenerMenuSemana(recargarRecetas);
   const [indiceActual, setIndiceActual] = useState(0);
   const flatListRef = useRef<FlatList<number>>(null);
 
