@@ -1,16 +1,23 @@
 // src/screens/LoginScreen.tsx
 import { useAuth } from "@/hooks/useAuth";
 import { colors } from "@/styles/colors";
-import { styles as globalStyles, radius, spacing, TYPOGRAPHY } from "@/styles/styles";
+import { styles as globalStyles, radius, spacing, typography } from "@/styles/styles";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function LoginScreen() {
-  const { signIn, cargando, error: authError } = useAuth();
+  const { signIn, cargando, error: authError, session } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  // Redirige si ya hay sesión
+  useEffect(() => {
+    if (session) {
+      router.replace("/(tabs)");
+    }
+  }, [session]);
 
   const onLogin = async () => {
     setError(null);
@@ -99,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGray,
     padding: spacing.lg,
     borderRadius: radius.md,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     marginBottom: spacing.lg,
     borderColor: 'rgba(200, 200, 200, 0.5)',
     borderWidth: 0.5,
@@ -116,7 +123,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     fontWeight: "bold",
   },
   secondaryButton: {
@@ -132,7 +139,7 @@ const styles = StyleSheet.create({
     color: colors.red,
     textAlign: "center",
     marginBottom: spacing.md,
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     width: '100%', // Asegurar que el texto de error también ocupe el ancho
   },
   activityIndicator: {

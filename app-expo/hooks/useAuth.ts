@@ -5,27 +5,36 @@ import { supabase } from "../lib/supabase";
 // Hook personalizado para autenticación
 export function useAuth() {
   const [session, setSession] = useState<any>(null);
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando] = useState(true); // Iniciar como true
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+    // getSession para una carga inicial potencialmente más rápida de la sesión.
+    // onAuthStateChange se encargará de poner cargando a false y actualizar la sesión.
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setSession(initialSession);
+      // No ponemos cargando a false aquí; dejamos que el listener lo haga
+      // para asegurar que tengamos el estado de sesión más actualizado.
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, ses) => {
-        setSession(ses);
-        if (ses) {
-          console.log("Access Token:", ses.access_token);
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
+        setSession(currentSession);
+        setCargando(false); // Marcar la carga inicial como completa aquí.
+        // if (currentSession) {
+        //   console.log("Access Token:", currentSession.access_token);
+        // }
       }
     );
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    // Guardamos el estado de carga global para restaurarlo después
+    const globalLoadingState = cargando;
     setCargando(true);
     setError(null);
     try {
@@ -34,29 +43,31 @@ export function useAuth() {
         password,
       });
       if (error) throw new Error(error.message);
+      // setSession ya se actualiza por onAuthStateChange
       return data;
     } catch (err: any) {
       setError(err.message);
       return null;
     } finally {
-      setCargando(false);
+      setCargando(globalLoadingState); // Restaurar estado de carga global
     }
   };
 
   const signOut = async () => {
+    const globalLoadingState = cargando;
     setCargando(true);
     setError(null);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw new Error(error.message);
+      // setSession ya se actualiza por onAuthStateChange
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setCargando(false);
+      setCargando(globalLoadingState);
     }
   };
 
-  // Ahora usando axios para el registro
   const signUpApi = async (payload: {
     email: string;
     password: string;
@@ -66,6 +77,7 @@ export function useAuth() {
     porciones?: number;
     preferencias_adicionales?: string;
   }) => {
+    const globalLoadingState = cargando;
     setCargando(true);
     setError(null);
     try {
@@ -78,9 +90,9 @@ export function useAuth() {
           },
         }
       );
+      // Aquí no hay cambio de sesión directo, así que no esperamos onAuthStateChange
       return response.data;
     } catch (err: any) {
-      // axios maneja los errores diferente a fetch
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
       } else {
@@ -88,7 +100,7 @@ export function useAuth() {
       }
       return null;
     } finally {
-      setCargando(false);
+      setCargando(globalLoadingState);
     }
   };
 

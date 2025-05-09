@@ -1,7 +1,7 @@
 // src/screens/RegistroScreen.tsx
 import { useAuth } from "@/hooks/useAuth";
 import { colors } from "@/styles/colors";
-import { styles as globalStyles, radius, spacing, TYPOGRAPHY } from "@/styles/styles";
+import { styles as globalStyles, radius, spacing, typography } from "@/styles/styles";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   stepTitle: {
-    fontSize: TYPOGRAPHY.body1, // Corregido de TYPOGRAPHY.h6
+    fontSize: typography.body1, // Corregido de typography.h6
     color: colors.gray, // Corregido de colors.darkGray
     marginBottom: spacing.lg,
     textAlign: 'center',
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGray,
     padding: spacing.lg,
     borderRadius: radius.md,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     marginBottom: spacing.md, // Menos margen entre inputs en onboarding
     borderColor: 'rgba(200, 200, 200, 0.5)',
     borderWidth: 0.5,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     fontWeight: "bold",
   },
   outlineButtonText: {
@@ -302,14 +302,14 @@ const styles = StyleSheet.create({
   },
   loginLinkText: {
     color: colors.primary,
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     textAlign: 'center',
   },
   errorText: { 
     color: colors.red,
     textAlign: "center",
     marginBottom: spacing.md,
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     width: '100%',
   },
   activityIndicator: {

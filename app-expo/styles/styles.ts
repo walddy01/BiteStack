@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { colors } from "./colors";
 
 // Constantes de diseño para mantener consistencia
-const TYPOGRAPHY = {
+const typography = {
   h1: 28,
   h2: 20,
   body1: 16,
@@ -43,7 +43,7 @@ const shadow = {
   }
 };
 
-export { radius, shadow, spacing, TYPOGRAPHY };
+export { radius, shadow, spacing, typography };
 
 export const styles = StyleSheet.create({
   container: {
@@ -56,15 +56,15 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: colors.black,
-    fontSize: TYPOGRAPHY.h1,
+    fontSize: typography.h1,
     fontWeight: 'bold',
   },
   subtitle: {
     color: colors.gray,
-    fontSize: TYPOGRAPHY.h2,
+    fontSize: typography.h2,
   },
   text: {
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
   },
   dark: {
     color: colors.black,
@@ -184,7 +184,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: radius.sm,
     padding: spacing.md,
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     color: colors.black,
     ...shadow.md,
     borderWidth: 0.5,

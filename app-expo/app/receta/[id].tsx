@@ -1,7 +1,7 @@
 import useMarcarFavorito from '@/hooks/useMarcarFavorito';
 import useObtenerReceta from '@/hooks/useObtenerReceta';
 import { colors } from '@/styles/colors';
-import { radius, shadow, spacing, TYPOGRAPHY } from '@/styles/styles';
+import { radius, shadow, spacing, typography } from '@/styles/styles';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, ChefHat, Clock, Cookie, Droplets, Dumbbell, Flame, Heart, RefreshCw, Users } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     color: colors.black,
   },
   header: {
@@ -246,15 +246,15 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   tituloReceta: {
-    fontSize: TYPOGRAPHY.h1,
+    fontSize: typography.h1,
     fontWeight: 'bold',
     color: colors.black,
     marginBottom: spacing.sm,
   },
   descripcionReceta: {
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     color: colors.gray,
-    lineHeight: TYPOGRAPHY.body1 * 1.4,
+    lineHeight: typography.body1 * 1.4,
   },
   contenedorMeta: {
     flexDirection: 'row',
@@ -271,12 +271,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   etiquetaMeta: {
-    fontSize: TYPOGRAPHY.caption,
+    fontSize: typography.caption,
     color: colors.gray,
     marginTop: spacing.xs,
   },
   valorMeta: {
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     fontWeight: '600',
     color: colors.black,
     marginTop: spacing.xs,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   tituloSeccion: {
-    fontSize: TYPOGRAPHY.h2,
+    fontSize: typography.h2,
     fontWeight: '600',
     color: colors.black,
     marginBottom: spacing.md,
@@ -308,13 +308,13 @@ const styles = StyleSheet.create({
     ...shadow.sm,
   },
   valorNutricion: {
-    fontSize: TYPOGRAPHY.h2,
+    fontSize: typography.h2,
     fontWeight: 'bold',
     color: colors.primary,
     marginVertical: spacing.xs,
   },
   etiquetaNutricion: {
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     color: colors.gray,
   },
   listaIngredientes: {
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   textoIngrediente: {
     flex: 1,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     color: colors.black,
   },
   contenedorPreparacion: {
@@ -363,13 +363,13 @@ const styles = StyleSheet.create({
   },
   textoNumeroPaso: {
     color: colors.white,
-    fontSize: TYPOGRAPHY.body2,
+    fontSize: typography.body2,
     fontWeight: '600',
   },
   textoPaso: {
     flex: 1,
-    fontSize: TYPOGRAPHY.body1,
+    fontSize: typography.body1,
     color: colors.black,
-    lineHeight: TYPOGRAPHY.body1 * 1.4,
+    lineHeight: typography.body1 * 1.4,
   },
 });
