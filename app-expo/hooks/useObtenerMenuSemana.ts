@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 export interface Recipe {
@@ -24,56 +24,49 @@ interface APIResponse {
   data: DayMenu;
 }
 
-export default function useObtenerMenuSemana(recargarRecetas?: number) {
+export default function useObtenerMenuSemana() {
   const [menuData, setMenuData] = useState<DayMenu | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchMenuSemana = async () => {
-      setCargando(true);
-      setError(null);
+  const fetchMenuSemana = useCallback(async () => {
+    setCargando(true);
+    setError(null);
 
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
 
-        if (!token) {
-          setError(new Error('Usuario no autenticado. No se encontró token de acceso.'));
-          setCargando(false);
-          return;
-        }
-
-        const res = await axios.get<APIResponse>(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/menus/semana`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (res.data.data?.menuId) {
-          setMenuData(res.data.data);
-        } else {
-          setMenuData(null);
-          console.warn('No se encontró menú válido:', res.data);
-        }
-      } catch (err: any) {
-        const mensaje = err.response?.data?.message || 'Error al obtener el menú';
-        setError(new Error(mensaje));
-        console.error('Error al obtener menú:', mensaje);
-      } finally {
-        setCargando(false);
+      if (!token) {
+        throw new Error('Usuario no autenticado');
       }
-    };
 
+      const res = await axios.get<APIResponse>(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/menus/semana`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.data?.menuId) {
+        setMenuData(res.data.data);
+      } else {
+        setMenuData(null);
+      }
+    } catch (err: any) {
+      const mensaje = err.response?.data?.message || 'Error al obtener el menú';
+      setError(new Error(mensaje));
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchMenuSemana();
-  }, [recargarRecetas]);
+  }, [fetchMenuSemana]);
 
   return {
     menuData,
     cargando,
     error,
+    refrescarMenu: fetchMenuSemana,
   };
 }

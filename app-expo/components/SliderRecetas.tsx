@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router } from 'expo-router'
 import {
   ChefHat,
   ChevronLeft,
@@ -8,8 +8,8 @@ import {
   Moon,
   Users,
   UtensilsCrossed,
-} from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+} from 'lucide-react-native'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -22,91 +22,83 @@ import {
   TouchableOpacity,
   View,
   ViewToken,
-} from 'react-native';
-import useObtenerMenuSemana, { Recipe } from '../hooks/useObtenerMenuSemana'; // DayMenu
-import { colors } from '../styles/colors';
+} from 'react-native'
+import { colors } from '../styles/colors'
+import { DayMenu, Recipe } from '../hooks/useObtenerMenuSemana'
 
-const { width: windowWidth } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get('window')
 
-/** Icono según tipo de comida */
 function obtenerIconoComida(tipoComida: string) {
   switch (tipoComida) {
     case 'Desayuno':
-      return <Coffee size={18} color={colors.primary} strokeWidth={2} />;
+      return <Coffee size={18} color={colors.primary} strokeWidth={2} />
     case 'Almuerzo':
-      return <UtensilsCrossed size={18} color={colors.primary} strokeWidth={2} />;
+      return <UtensilsCrossed size={18} color={colors.primary} strokeWidth={2} />
     case 'Cena':
-      return <Moon size={18} color={colors.primary} strokeWidth={2} />;
+      return <Moon size={18} color={colors.primary} strokeWidth={2} />
     default:
-      return <UtensilsCrossed size={18} color={colors.primary} strokeWidth={2} />;
+      return <UtensilsCrossed size={18} color={colors.primary} strokeWidth={2} />
   }
 }
 
 function obtenerNombreDia(cadenaFecha: string) {
-  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const d = new Date(cadenaFecha);
-  return dias[d.getDay()];
+  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']
+  const d = new Date(cadenaFecha)
+  return dias[d.getDay()]
 }
 
-export default function SliderRecetas({ recargarRecetas }: { recargarRecetas?: number }) {
-  const { menuData, cargando, error } = useObtenerMenuSemana(recargarRecetas);
-  const [indiceActual, setIndiceActual] = useState(0);
-  const flatListRef = useRef<FlatList<number>>(null);
+export default function SliderRecetas({
+  menuData,
+  cargandoMenu,
+  errorMenu,
+}: {
+  menuData: DayMenu | null
+  cargandoMenu: boolean
+  errorMenu: Error | null
+}) {
+  const [indiceActual, setIndiceActual] = useState(0)
+  const flatListRef = useRef<FlatList<number>>(null)
 
-  // Inicializar el índice actual al cargar el menú
   useEffect(() => {
-    if (!menuData) return;
-    const [año, mes, dia] = menuData.menuDate.split('-').map(Number);
-    const inicioSemana = new Date(año, mes - 1, dia);
-    const hoy = new Date();
-    const diferenciaDias = Math.floor((hoy.getTime() - inicioSemana.getTime()) / (1000*60*60*24));
-    if (diferenciaDias >= 0 && diferenciaDias < 7) {
-      setIndiceActual(diferenciaDias);
-      flatListRef.current?.scrollToIndex({ index: diferenciaDias, animated: false });
+    if (!menuData) return
+    const [año, mes, dia] = menuData.menuDate.split('-').map(Number)
+    const inicioSemana = new Date(año, mes - 1, dia)
+    const hoy = new Date()
+    const diff = Math.floor((hoy.getTime() - inicioSemana.getTime()) / (1000*60*60*24))
+    if (diff >= 0 && diff < 7) {
+      setIndiceActual(diff)
+      flatListRef.current?.scrollToIndex({ index: diff, animated: false })
     }
-  }, [menuData]);
+  }, [menuData])
 
   const mostrarNombreDia = useCallback(() => {
-    if (!menuData) return '';
-    const fechaActual = new Date(menuData.menuDate);
-    fechaActual.setDate(fechaActual.getDate() + indiceActual);
-    return obtenerNombreDia(fechaActual.toISOString().split('T')[0]);
-  }, [menuData, indiceActual]);
+    if (!menuData) return ''
+    const fecha = new Date(menuData.menuDate)
+    fecha.setDate(fecha.getDate() + indiceActual)
+    return obtenerNombreDia(fecha.toISOString().split('T')[0])
+  }, [menuData, indiceActual])
 
   const irSiguiente = () => {
-    if (indiceActual < 6) {
-      flatListRef.current?.scrollToIndex({ index: indiceActual + 1, animated: true });
-    }
-  };
+    if (indiceActual < 6) flatListRef.current?.scrollToIndex({ index: indiceActual + 1, animated: true })
+  }
   const irAnterior = () => {
-    if (indiceActual > 0) {
-      flatListRef.current?.scrollToIndex({ index: indiceActual - 1, animated: true });
-    }
-  };
+    if (indiceActual > 0) flatListRef.current?.scrollToIndex({ index: indiceActual - 1, animated: true })
+  }
 
-  const configuracionVisibilidad = { viewAreaCoveragePercentThreshold: 50 };
-  const alCambiarElementosVisibles = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      const idx = viewableItems[0]?.index;
-      if (idx != null) setIndiceActual(idx);
-    },
-    []
-  );
+  const configuracionVisibilidad = { viewAreaCoveragePercentThreshold: 50 }
+  const alCambiar = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const idx = viewableItems[0]?.index
+    if (idx != null) setIndiceActual(idx)
+  }, [])
 
-  const arrayDias = useMemo(() => Array.from({ length: 7 }, (_, i) => i), []);
+  const arrayDias = useMemo(() => Array.from({ length: 7 }, (_, i) => i), [])
 
-  const renderizarTarjetaReceta = (receta: Recipe, esUltima: boolean) => (
+  const renderTarjeta = (receta: Recipe, esUltima: boolean) => (
     <TouchableOpacity
-      activeOpacity={0.7}
       key={receta.id}
       style={[styles.recipeCard, !esUltima && styles.recipeCardMargin]}
-      onPress={() => {
-        const id = receta.id.toString();
-        router.push({
-          pathname: "/receta/[id]",
-          params: { id }
-        } as any);
-      }}
+      activeOpacity={0.7}
+      onPress={() => router.push({ pathname: '/receta/[id]', params: { id: receta.id.toString() } } as any)}
     >
       <View style={styles.recipeHeader}>
         {obtenerIconoComida(receta.mealType)}
@@ -128,48 +120,45 @@ export default function SliderRecetas({ recargarRecetas }: { recargarRecetas?: n
         </View>
       </View>
     </TouchableOpacity>
-  );
+  )
 
-  const renderizarElementoDia = ({ item: indiceDia }: { item: number }) => {
-    if (!menuData) return null;
-    const fecha = new Date(menuData.menuDate);
-    fecha.setDate(fecha.getDate() + indiceDia);
-    const cadenaFecha = fecha.toISOString().split('T')[0];
-    const recetasParaDia = menuData.recipes.filter(r => r.date === cadenaFecha);
-
+  const renderDia = ({ item: i }: { item: number }) => {
+    if (!menuData) return null
+    const fecha = new Date(menuData.menuDate)
+    fecha.setDate(fecha.getDate() + i)
+    const cadena = fecha.toISOString().split('T')[0]
+    const recetas = menuData.recipes.filter(r => r.date === cadena)
     return (
       <View style={styles.dayContainer}>
         <ScrollView contentContainerStyle={styles.recipesContainer}>
-          {recetasParaDia.map((rec, idx) =>
-            renderizarTarjetaReceta(rec, idx === recetasParaDia.length - 1)
-          )}
+          {recetas.map((r, idx) => renderTarjeta(r, idx === recetas.length - 1))}
         </ScrollView>
       </View>
-    );
-  };
+    )
+  }
 
-  if (cargando) {
+  if (cargandoMenu) {
     return (
       <SafeAreaView style={styles.centered}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Cargando menú...</Text>
       </SafeAreaView>
-    );
+    )
   }
-  if (error) {
+  if (errorMenu) {
     return (
       <SafeAreaView style={styles.centered}>
         <Text style={styles.errorText}>Error al cargar el menú:</Text>
-        <Text style={styles.errorTextDetail}>{error.message}</Text>
+        <Text style={styles.errorTextDetail}>{errorMenu.message}</Text>
       </SafeAreaView>
-    );
+    )
   }
   if (!menuData || menuData.recipes.length === 0) {
     return (
       <SafeAreaView style={styles.centered}>
         <Text style={styles.noDataText}>No hay recetas disponibles para mostrar.</Text>
       </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -179,30 +168,22 @@ export default function SliderRecetas({ recargarRecetas }: { recargarRecetas?: n
         <Text style={styles.mainTitle}>Recetas del Día</Text>
         <View style={styles.header}>
           <TouchableOpacity onPress={irAnterior} disabled={indiceActual === 0}>
-            <ChevronLeft
-              size={28}
-              color={indiceActual === 0 ? colors.lightGray : colors.primary}
-              strokeWidth={2.5}
-            />
+            <ChevronLeft size={28} color={indiceActual === 0 ? colors.lightGray : colors.primary} strokeWidth={2.5} />
           </TouchableOpacity>
           <Text style={styles.dayText}>{mostrarNombreDia()}</Text>
           <TouchableOpacity onPress={irSiguiente} disabled={indiceActual === 6}>
-            <ChevronRight
-              size={28}
-              color={indiceActual === 6 ? colors.lightGray : colors.primary}
-              strokeWidth={2.5}
-            />
+            <ChevronRight size={28} color={indiceActual === 6 ? colors.lightGray : colors.primary} strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
         <FlatList
           ref={flatListRef}
           data={arrayDias}
-          keyExtractor={(i) => i.toString()}
+          keyExtractor={i => i.toString()}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          renderItem={renderizarElementoDia}
-          onViewableItemsChanged={alCambiarElementosVisibles}
+          renderItem={renderDia}
+          onViewableItemsChanged={alCambiar}
           viewabilityConfig={configuracionVisibilidad}
           getItemLayout={(_, index) => ({
             length: windowWidth,
@@ -213,7 +194,7 @@ export default function SliderRecetas({ recargarRecetas }: { recargarRecetas?: n
         />
       </View>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -280,4 +261,4 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 18, fontWeight: 'bold', color: '#dc3545', textAlign: 'center' },
   errorTextDetail: { fontSize: 14, color: colors.gray, textAlign: 'center' },
   noDataText: { fontSize: 16, color: colors.gray },
-});
+})
