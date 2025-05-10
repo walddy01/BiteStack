@@ -31,7 +31,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior="padding" // Modificado para usar padding en ambas plataformas
+      behavior="padding"
       style={styles.keyboardAvoidingContainer}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
   },
   container: {
     ...globalStyles.container,
@@ -88,13 +87,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxl,
     backgroundColor: colors.white,
     alignItems: 'center',
+    marginTop: 'auto',
   },
   logo: {
     width: 150,
     height: 150,
     resizeMode: 'contain',
     marginBottom: spacing.xl,
-    borderRadius: radius.lg, // Bordes redondeados para el logo (corregido a lg)
+    borderRadius: radius.lg,
   },
   title: {
     ...globalStyles.title,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(200, 200, 200, 0.5)',
     borderWidth: 0.5,
     color: colors.black,
-    width: '100%', // Ocupar todo el ancho disponible
+    width: '100%',
   },
   button: {
     backgroundColor: colors.primary,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: "center",
     marginBottom: spacing.md,
-    width: '100%', // Ocupar todo el ancho disponible
+    width: '100%',
   },
   buttonText: {
     color: colors.white,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing.md,
     fontSize: typography.body2,
-    width: '100%', // Asegurar que el texto de error también ocupe el ancho
+    width: '100%',
   },
   activityIndicator: {
     marginTop: spacing.lg,

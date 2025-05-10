@@ -27,10 +27,6 @@ export default function Perfil() {
     try {
       await signOut();
       mostrarAlerta('Has cerrado sesión correctamente', 'exito');
-      // Es común querer que el usuario vea la alerta antes de redirigir,
-      // pero para una redirección inmediata después del signOut, esto está bien.
-      // Si quieres que vea la alerta, podrías poner un pequeño delay o
-      // redirigir en el onClose de la alerta.
       router.replace('/auth/login');
     } catch (e: any) {
       mostrarAlerta(e.message || 'No se pudo cerrar sesión', 'error');
@@ -59,22 +55,16 @@ export default function Perfil() {
             // --- VISTA PARA USUARIO CON SESIÓN ACTIVA ---
             <View style={styles.container}>
               <View style={styles.profileHeader}>
-                {/* UserCircle2 es un componente (ícono), no necesita <Text> */}
                 <UserCircle2 size={80} color={colors.primary} strokeWidth={1.5} />
-                {/* userFullName es un string, debe estar en <Text> */}
                 <Text style={styles.userName}>{userFullName}</Text>
-                {/* session.user.email es un string, debe estar en <Text>. Verificamos que exista. */}
                 {session.user?.email && <Text style={styles.emailText}>{session.user.email}</Text>}
               </View>
 
               <View style={styles.menuContainer}>
                 {menuOptions.map((option, index) => (
                   <TouchableOpacity key={index} style={styles.optionButton} onPress={option.onPress}>
-                    {/* option.icon es un componente (ícono), no necesita <Text> */}
                     {option.icon}
-                    {/* option.title es un string, debe estar en <Text> */}
                     <Text style={styles.optionText}>{option.title}</Text>
-                    {/* ChevronRight es un componente (ícono), no necesita <Text> */}
                     <ChevronRight size={20} color={colors.gray} />
                   </TouchableOpacity>
                 ))}
@@ -84,27 +74,21 @@ export default function Perfil() {
                 style={styles.logoutButton}
                 onPress={handleSignOut}
               >
-                {/* LogOut es un componente (ícono), no necesita <Text> */}
                 <LogOut size={20} color={colors.white} style={{ marginRight: spacing.sm }} />
-                {/* "Cerrar Sesión" es un string literal, debe estar en <Text> */}
                 <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
               </TouchableOpacity>
             </View>
           ) : (
             // --- VISTA PARA USUARIO SIN SESIÓN (INVITADO) ---
             <View style={styles.authContainer}>
-              {/* UserCircle2 es un componente (ícono), no necesita <Text> */}
               <UserCircle2 size={80} color={colors.gray} strokeWidth={1.5} />
-              {/* El texto informativo es un string literal, debe estar en <Text> */}
               <Text style={styles.infoText}>
                 Necesitas iniciar sesión para ver tu perfil y acceder a todas las funcionalidades.
               </Text>
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/login")}>
-                {/* El texto del botón es un string literal, debe estar en <Text> */}
+              <TouchableOpacity style={styles.button} onPress={() => router.push("/auth/login")}>                
                 <Text style={styles.buttonText}>Ir a Iniciar Sesión</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push("/auth/registro")}>
-                {/* El texto del botón es un string literal, debe estar en <Text> */}
+              <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push("/auth/registro")}>                
                 <Text style={[styles.buttonText, styles.secondaryButtonText]}>Crear Cuenta</Text>
               </TouchableOpacity>
             </View>
@@ -112,9 +96,6 @@ export default function Perfil() {
         </ScrollView>
       </SafeAreaView>
 
-      {/* El componente AlertPersonalizado se renderiza aquí.
-          Asegúrate de que AlertPersonalizado también envuelva todos sus strings internos en <Text>.
-          La prop `mensaje` aquí es `alertaMensaje`, que es un string. */}
       <AlertPersonalizado
         visible={alertaVisible}
         mensaje={alertaMensaje}
@@ -125,8 +106,6 @@ export default function Perfil() {
   );
 }
 
-// Los estilos se mantienen iguales, ya que la solicitud era mantener la apariencia.
-// Estos estilos ya estaban bien definidos.
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -186,7 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     borderRadius: radius.md,
     width: '100%',
-    marginTop: 'auto', // Esto ayuda a empujar el botón hacia abajo si hay espacio vertical
+    marginTop: 'auto',
     marginBottom: spacing.md,
   },
   logoutButtonText: {
@@ -230,8 +209,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   scrollViewContent: {
-    flexGrow: 1, // Esencial para que el contenido del ScrollView pueda expandirse y centrarse si es corto.
-    // paddingBottom: spacing.xl, // Puedes añadir padding inferior si es necesario.
+    flexGrow: 1,
     backgroundColor: colors.white,
   },
 });
