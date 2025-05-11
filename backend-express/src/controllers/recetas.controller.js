@@ -206,7 +206,6 @@ const regenerarReceta = async (req, res) => {
     You are an expert chef AI. Your task is to **modify an existing recipe** based on user instructions.
     The user will provide the original recipe (as context) and a prompt with the desired changes.
     Respond with the **complete, modified recipe in JSON format**.
-
     The JSON structure for the recipe is:
     - **title**: Short and concise recipe title.
     - **description**: Brief summary of the recipe.
@@ -217,7 +216,7 @@ const regenerarReceta = async (req, res) => {
         - **ingredient**: Name of the ingredient. Must start with capital letter (e.g., "Arroz", "Leche", "Tomate").
         - **notes**: Additional details about the ingredient (optional).
         - **amount**: Numeric value indicating the quantity.
-        - **unit**: Unit of measurement (e.g., "g", "ml", "l").
+        - **unit**: Unit of measurement (g, ml, l, etc.).
     - **instructions**: Array of step-by-step instructions.
     - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings).
     - **protein_per_serving**: Grams of protein per serving.
@@ -231,7 +230,7 @@ const regenerarReceta = async (req, res) => {
     - **Field Names**: JSON field names MUST remain in English, as specified above.
     - **Ingredient Names**: MUST start with a capital letter to maintain consistency.
     - **Ingredient Notes**: Use the "notes" field for an ingredient only when it's genuinely necessary for clarification (e.g., "Tomatoes, ripe", "Milk, preferably whole"). Avoid using "notes" for trivial details that are obvious or don't significantly impact the recipe.
-    - **SI Units**: **Use only International System of Units (SI) measurements**: grams (g), milliliters (ml), liters (l), and degrees Celsius (°C). Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit. This applies to any new or modified ingredients.
+    - **SI Units**: **Use only International System of Units (SI) measurements**: g, ml, l, °C, etc. Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit. This applies to any new or modified ingredients.
     - **Nutritional Values**: Ensure nutritional values are per serving. If the number_of_servings changes due to the modification, recalculate these values accordingly.
     - **Clarity**: Provide specific ingredient quantities and clear instructions in the modified recipe.
     - **Interpretation**: If the user's modification prompt is unclear or contradictory, try your best to interpret it reasonably or maintain the original aspect for that part if modification is not feasible.

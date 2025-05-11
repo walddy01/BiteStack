@@ -2,7 +2,7 @@ import useMarcarFavorito from '@/hooks/useMarcarFavorito';
 import useObtenerReceta from '@/hooks/useObtenerReceta';
 import useRegenerarReceta from '@/hooks/useRegenerarReceta';
 import { colors } from '@/styles/colors';
-import { radius, shadow, spacing, typography } from '@/styles/styles';
+import { radius, shadow, spacing, typography } from '@/styles/globalStyles';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   ArrowLeft,

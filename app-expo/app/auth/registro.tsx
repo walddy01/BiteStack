@@ -1,10 +1,10 @@
 // src/screens/RegistroScreen.tsx
 import { useAuth } from "@/hooks/useAuth";
 import { colors } from "@/styles/colors";
-import { styles as globalStyles, radius, spacing, typography } from "@/styles/styles";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { styles } from "@/styles/auth/registro.styles"; // Updated import path
 
 export default function RegistroScreen() {
   const { signUpApi } = useAuth();
@@ -216,104 +216,3 @@ export default function RegistroScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  keyboardAvoidingContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  container: {
-    ...globalStyles.container,
-    justifyContent: "center",
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xxl,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-  },
-  logo: {
-    width: 150, 
-    height: 150,
-    resizeMode: 'contain',
-    marginBottom: spacing.xl, 
-    borderRadius: radius.lg, 
-  },
-  title: {
-    ...globalStyles.title,
-    textAlign: "center",
-    marginBottom: spacing.lg, 
-    color: colors.primary,
-  },
-  stepTitle: {
-    fontSize: typography.body1, // Corregido de typography.h6
-    color: colors.gray, // Corregido de colors.darkGray
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  input: {
-    backgroundColor: colors.lightGray,
-    padding: spacing.lg,
-    borderRadius: radius.md,
-    fontSize: typography.body1,
-    marginBottom: spacing.md, // Menos margen entre inputs en onboarding
-    borderColor: 'rgba(200, 200, 200, 0.5)',
-    borderWidth: 0.5,
-    color: colors.black,
-    width: '100%',
-  },
-  textArea: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: spacing.lg,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.md,
-    alignItems: "center",
-    flex: 1, // Para que los botones se expandan si hay espacio
-    marginHorizontal: spacing.xs, // Pequeño margen entre botones
-  },
-  outlineButton: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: typography.body1,
-    fontWeight: "bold",
-  },
-  outlineButtonText: {
-    color: colors.primary,
-  },
-  loginLink: {
-    marginTop: spacing.xl,
-  },
-  loginLinkText: {
-    color: colors.primary,
-    fontSize: typography.body2,
-    textAlign: 'center',
-  },
-  errorText: { 
-    color: colors.red,
-    textAlign: "center",
-    marginBottom: spacing.md,
-    fontSize: typography.body2,
-    width: '100%',
-  },
-  activityIndicator: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.lg,
-  }
-});

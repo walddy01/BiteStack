@@ -335,7 +335,7 @@ const generarMenu = async (req, res) => {
         - **ingredient**: Name of the ingredient. Must start with capital letter (e.g., "Arroz", "Leche", "Tomate").
         - **notes**: Additional details about the ingredient (optional).
         - **amount**: Numeric value indicating the quantity.
-        - **unit**: **Use only units from the International System of Units (SI)** (grams, milliliters, liters).
+        - **unit**: **Use only units from the International System of Units (SI)** (g, ml, l, etc.).
     - **instructions**: Array of step-by-step instructions.
     - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings).
     - **protein_per_serving**: Grams of protein per serving.
@@ -349,7 +349,7 @@ const generarMenu = async (req, res) => {
     - **Ingredient Notes**: Use the "notes" field for an ingredient only when it's genuinely necessary for clarification (e.g., "Tomatoes, ripe", "Milk, preferably whole"). Avoid using "notes" for trivial details that are obvious or don't significantly impact the recipe.
     - Provide specific ingredient quantities and clear instructions.
     - Ensure that **nutritional values are calculated per serving** (divide total by number_of_servings).
-    - **Use only International System of Units (SI) measurements**: grams (g), milliliters (ml), liters (l), and degrees Celsius (°C). Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit.
+    - **Use only International System of Units (SI) measurements**: g, ml, l, °C, etc. Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit.
     `;
     const completion = await openai.beta.chat.completions.parse({
       model: "gemini-2.0-flash-lite",

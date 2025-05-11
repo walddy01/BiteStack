@@ -1,7 +1,8 @@
 // Index.tsx
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react' // Añadido useCallback
 import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
-import { styles } from '../../styles/styles'
+import { useFocusEffect } from '@react-navigation/native'; // Importar useFocusEffect
+import { styles } from '../../styles/globalStyles'
 import AlertPersonalizado from '@/components/AlertPersonalizado'
 import Preferencias from '@/components/Preferencias'
 import SliderRecetas from '@/components/SliderRecetas'
@@ -42,7 +43,7 @@ export default function Index() {
   const {
     preferencias: preferenciasDB,
     cargando: cargandoObtenerPrefs,
-    error: errorObtenerPrefs,
+    // error: errorObtenerPrefs,
   } = useObtenerPreferencias()
 
   useEffect(() => {
@@ -100,6 +101,16 @@ export default function Index() {
     error: errorMenu,
     refrescarMenu,
   } = useObtenerMenuSemana()
+
+  // Refrescar el menú cada vez que la pantalla obtiene el foco
+  useFocusEffect(
+    useCallback(() => {
+      if (session) { // Solo refrescar si hay sesión
+        console.log('[IndexScreen] Pantalla en foco, refrescando menú...');
+        refrescarMenu();
+      }
+    }, [session, refrescarMenu]) // Asegúrate de que refrescarMenu sea estable o inclúyelo si cambia
+  );
 
   const generarMenu = async () => {
     try {

@@ -1,5 +1,5 @@
 import { colors } from "@/styles/colors";
-import { radius, spacing, typography } from "@/styles/styles";
+import { radius, spacing, typography } from "@/styles/globalStyles";
 import { useRouter } from "expo-router";
 import { ChevronRight, Edit3, HelpCircle, Info, LogOut, ShieldCheck, UserCircle2 } from 'lucide-react-native';
 import React, { useState } from 'react'; // React es necesario para JSX

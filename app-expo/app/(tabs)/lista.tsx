@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../../styles/colors";
-import { styles as globalStyles } from '../../styles/styles'; // Renombrar para evitar conflicto
+import { styles as globalStyles } from '../../styles/globalStyles'; // Renombrar para evitar conflicto
 
 export default function Lista() {
   const { session } = useAuth();

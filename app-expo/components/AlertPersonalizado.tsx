@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
-import { radius, shadow, spacing } from '../styles/styles'; // Importar spacing, radius y shadow
+import { styles as componentStyles } from '../styles/components/AlertPersonalizado.styles'; // Importar estilos del componente
 
 interface AlertPersonalizadoProps {
   visible: boolean;
@@ -29,68 +29,27 @@ const AlertPersonalizado: React.FC<AlertPersonalizadoProps> = ({ visible, mensaj
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.centeredView}>
-        <View style={[styles.modalView, { borderColor: getBorderColor() }]}>
-          <Text style={styles.modalText}>{mensaje}</Text>
+      <View style={componentStyles.centeredView}>
+        <View style={[componentStyles.modalView, { borderColor: getBorderColor() }]}>
+          <Text style={componentStyles.modalText}>{mensaje}</Text>
           <TouchableOpacity
-            // Estilo del botón modificado: sin fondo, con borde gris, sin sombra
             style={[
-              styles.button,
+              componentStyles.button,
               {
                 backgroundColor: 'transparent',
-                borderColor: colors.gray,
+                borderColor: colors.gray, // Mantener borde gris para el botón cerrar
                 borderWidth: 1,
-                elevation: 0,
+                // elevation: 0, // Quitado, ya no está en el estilo base del botón
               },
             ]}
             onPress={onClose}
           >
-            {/* Texto del botón oscuro para contraste */}
-            <Text style={[styles.textStyle, { color: colors.black }]}>Cerrar</Text>
+            <Text style={[componentStyles.buttonText, { color: colors.black }]}>Cerrar</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    marginHorizontal: spacing.xl,
-    marginVertical: 20,
-    width: '80%',
-    backgroundColor: colors.white,
-    borderRadius: radius.md,
-    padding: spacing.xl,
-    alignItems: 'center',
-    ...shadow.md,
-    borderWidth: 2,
-    // borderColor se aplica inline
-  },
-  button: {
-    borderRadius: radius.md, // Consistencia con botones de [id].tsx
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg, // Consistencia
-    elevation: 2,
-    minWidth: 100, // Consistencia
-    alignItems: 'center', // Consistencia
-    marginTop: spacing.lg, // Usar constante de espaciado
-  },
-  textStyle: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    color: colors.black,
-    fontSize: 16,
-  },
-});
 
 export default AlertPersonalizado;

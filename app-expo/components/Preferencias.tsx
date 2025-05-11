@@ -1,7 +1,8 @@
 import { Check, Pencil, WandSparkles, X } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { colors } from '../styles/colors';
-import { styles } from '../styles/styles';
+import { styles as globalStyles } from '../styles/globalStyles'; // Estilos globales generales
+import { styles as componentStyles } from '../styles/components/Preferencias.styles'; // Estilos específicos del componente
 
 interface Props {
 	preferencias: {
@@ -49,31 +50,31 @@ export default function Preferencias({
 
 	return (
 		<>
-			<View style={styles.preferencesCard}>
-				<View style={styles.preferencesHeader}>
-					<Text style={[styles.text, styles.bold]}>Tus Preferencias</Text>
+			<View style={componentStyles.preferencesCard}>
+				<View style={componentStyles.preferencesHeader}>
+					<Text style={[globalStyles.text, globalStyles.bold]}>Tus Preferencias</Text>
 
 					{!editarPreferencias ? (
 						<Pressable
-							style={styles.editButton}
+							style={componentStyles.editButton}
 							onPress={() => {
 								setPreferenciasOriginales(preferencias);
 								setEditarPreferencias(true);
 							}}
 						>
 							<Pencil color={colors.white} size={15} />
-							<Text style={[styles.text, styles.light]}>Editar</Text>
+							<Text style={[globalStyles.text, globalStyles.light]}>Editar</Text>
 						</Pressable>
 					) : (
 						<View style={{ flexDirection: 'row', gap: 6 }}>
 							<Pressable
-								style={styles.cancelButton}
+								style={componentStyles.cancelButton}
 								onPress={cancelarPreferencias}
 							>
 								<X color={colors.red} size={20} />
 							</Pressable>
 							<Pressable
-								style={styles.saveButton}
+								style={componentStyles.saveButton}
 								onPress={guardarPreferencias}
 							>
 								<Check color={colors.white} size={20} />
@@ -84,56 +85,55 @@ export default function Preferencias({
 
 				{/* PREFERENCIAS DE COMIDAS */}
 				{editarPreferencias ? (
-					<View style={styles.preferencesDetails}>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>Dieta</Text>
+					<View style={componentStyles.preferencesDetails}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>Dieta</Text>
 							<TextInput
-								style={styles.preferenceInput}
+								style={componentStyles.preferenceInput}
 								value={preferencias.dieta}
 								onChangeText={(text) => handleChange('dieta', text)}
 							/>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Calorías
 							</Text>
 							<TextInput
-								style={styles.preferenceInput}
+								style={componentStyles.preferenceInput}
 								value={String(preferencias.calorias)}
 								keyboardType="numeric"
 								onChangeText={(text) => handleChange('calorias', text)}
 							/>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Alergias
 							</Text>
 							<TextInput
-								style={styles.preferenceInput}
+								style={componentStyles.preferenceInput}
 								value={preferencias.alergias}
 								onChangeText={(text) => handleChange('alergias', text)}
 							/>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Porciones
 							</Text>
 							<TextInput
-								style={styles.preferenceInput}
+								style={componentStyles.preferenceInput}
 								value={String(preferencias.porciones)}
                 keyboardType="numeric"
 								onChangeText={(text) => handleChange('porciones', text)}
 							/>
 						</View>
-						<View style={[styles.preferenceItem, styles.textAreaContainer]}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={[componentStyles.preferenceItem, componentStyles.textAreaContainer]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Preferencias Adicionales
 							</Text>
 							<TextInput
-								style={styles.textArea}
+								style={componentStyles.textArea}
 								multiline={true}
 								numberOfLines={4}
-								textAlignVertical="top"
 								placeholder="Escribe aquí tus preferencias adicionales..."
 								value={preferencias.preferencias_adicionales}
 								onChangeText={(text) => handleChange('preferencias_adicionales', text)}
@@ -141,37 +141,37 @@ export default function Preferencias({
 						</View>
 					</View>
 				) : (
-					<View style={styles.preferencesDetails}>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>Dieta</Text>
-							<Text style={[styles.preferenceValue, styles.text]}>
+					<View style={componentStyles.preferencesDetails}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>Dieta</Text>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
 								{preferencias.dieta}
 							</Text>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Calorías
 							</Text>
-							<Text style={[styles.preferenceValue, styles.text]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
 								{preferencias.calorias}{' '}
 								{preferencias.calorias !== 0 ? 'kcal' : ''}
 							</Text>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Alergias
 							</Text>
-							<Text style={[styles.preferenceValue, styles.text]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
 								{preferencias.alergias !== '' && preferencias.alergias !== null
 									? preferencias.alergias
 									: 'Ninguna'}
 							</Text>
 						</View>
-						<View style={styles.preferenceItem}>
-							<Text style={[styles.preferenceLabel, styles.text]}>
+						<View style={componentStyles.preferenceItem}>
+							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Porciones
 							</Text>
-							<Text style={[styles.preferenceValue, styles.text]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
 								{preferencias.porciones}
 							</Text>
 						</View>
@@ -179,18 +179,18 @@ export default function Preferencias({
 				)}
 
 				{/* BOTONES DE COMIDAS */}
-				<View style={styles.comidasContainer}>
+				<View style={componentStyles.comidasContainer}>
 					<Pressable
 						style={[
-							styles.comidasButton,
-							comidasActivas.desayuno && styles.comidasButtonActive,
+							componentStyles.comidasButton,
+							comidasActivas.desayuno && componentStyles.comidasButtonActive,
 						]}
 						onPress={() => alternarComida('desayuno')}
 					>
 						<Text
 							style={[
-								styles.text,
-								comidasActivas.desayuno ? styles.light : styles.dark,
+								globalStyles.text,
+								comidasActivas.desayuno ? globalStyles.light : globalStyles.dark,
 							]}
 						>
 							Desayuno
@@ -199,15 +199,15 @@ export default function Preferencias({
 
 					<Pressable
 						style={[
-							styles.comidasButton,
-							comidasActivas.almuerzo && styles.comidasButtonActive,
+							componentStyles.comidasButton,
+							comidasActivas.almuerzo && componentStyles.comidasButtonActive,
 						]}
 						onPress={() => alternarComida('almuerzo')}
 					>
 						<Text
 							style={[
-								styles.text,
-								comidasActivas.almuerzo ? styles.light : styles.dark,
+								globalStyles.text,
+								comidasActivas.almuerzo ? globalStyles.light : globalStyles.dark,
 							]}
 						>
 							Almuerzo
@@ -216,15 +216,15 @@ export default function Preferencias({
 
 					<Pressable
 						style={[
-							styles.comidasButton,
-							comidasActivas.cena && styles.comidasButtonActive,
+							componentStyles.comidasButton,
+							comidasActivas.cena && componentStyles.comidasButtonActive,
 						]}
 						onPress={() => alternarComida('cena')}
 					>
 						<Text
 							style={[
-								styles.text,
-								comidasActivas.cena ? styles.light : styles.dark,
+								globalStyles.text,
+								comidasActivas.cena ? globalStyles.light : globalStyles.dark,
 							]}
 						>
 							Cena
@@ -235,10 +235,10 @@ export default function Preferencias({
 
 			{/* BOTÓN DE GENERAR MENÚ */}
 			{!editarPreferencias && (
-				<View style={styles.generarContainer}>
-					<Pressable style={styles.generarButton} onPress={generarMenu}>
+				<View style={componentStyles.generarContainer}>
+					<Pressable style={componentStyles.generarButton} onPress={generarMenu}>
 						<WandSparkles color={colors.white} size={20} />
-						<Text style={[styles.text, styles.light, styles.bold]}>
+						<Text style={[globalStyles.text, globalStyles.light, globalStyles.bold]}>
 							Generar Nuevo Menú Semanal
 						</Text>
 					</Pressable>
