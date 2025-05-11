@@ -38,7 +38,7 @@ const SchemaReceta = z.object({
   fat_per_serving: z.number(),
 });
 
-/** GET /recetas/favoritas */
+// GET /recetas/favoritas
 const getRecetasFavoritas = async (req, res) => {
   try {
     const idUsuario = req.user.id;
@@ -87,12 +87,11 @@ const getRecetasFavoritas = async (req, res) => {
   }
 };
 
-/** PATCH /recetas/favorito/:id */
+// PATCH /recetas/favorito/:id
 const alternarFavorito = async (req, res) => {
   try {
     const idReceta = parseInt(req.params.id, 10);
 
-    // Solo permite alternar recetas del usuario autenticado
     const receta = await prisma.receta.findFirst({
       where: { id: idReceta, usuario_id: req.user.id },
     });
@@ -112,12 +111,11 @@ const alternarFavorito = async (req, res) => {
   }
 };
 
-/** GET /recetas/:receta_id */
+// GET /recetas/:receta_id
 const getReceta = async (req, res) => {
   try {
     const idReceta = parseInt(req.params.receta_id, 10);
 
-    // Solo permite ver recetas del usuario autenticado
     const recetaEncontrada = await prisma.receta.findFirst({
       where: { id: idReceta, usuario_id: req.user.id },
       include: {
@@ -167,7 +165,7 @@ const getReceta = async (req, res) => {
   }
 };
 
-/** GET /recetas/generarRecetaMock/:userPrompt */
+// GET /recetas/generarRecetaMock/:userPrompt
 const generarRecetaMock = async (req, res) => {
   try {
     const recetaMock = {
@@ -196,7 +194,7 @@ const generarRecetaMock = async (req, res) => {
   }
 };
 
-/** GET /recetas/generarRecetaAI/:userPrompt */
+// GET /recetas/generarRecetaAI/:userPrompt
 const generarRecetaAI = async (req, res) => {
   try {
     const { userPrompt } = req.params;
