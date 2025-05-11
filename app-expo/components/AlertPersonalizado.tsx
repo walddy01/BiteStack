@@ -11,10 +11,10 @@ interface AlertPersonalizadoProps {
 }
 
 const AlertPersonalizado: React.FC<AlertPersonalizadoProps> = ({ visible, mensaje, tipo = 'info', onClose }) => {
-  const getBackgroundColor = () => {
+  const getBorderColor = () => {
     switch (tipo) {
       case 'exito':
-        return colors.green; // Define colors.green en tu archivo de colores
+        return colors.green;
       case 'error':
         return colors.red;
       default:
@@ -30,13 +30,23 @@ const AlertPersonalizado: React.FC<AlertPersonalizadoProps> = ({ visible, mensaj
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
-        <View style={[styles.modalView, { backgroundColor: getBackgroundColor() }]}>
+        <View style={[styles.modalView, { borderColor: getBorderColor() }]}>
           <Text style={styles.modalText}>{mensaje}</Text>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.white }]}
+            // Estilo del botón modificado: sin fondo, con borde gris, sin sombra
+            style={[
+              styles.button,
+              {
+                backgroundColor: 'transparent',
+                borderColor: colors.gray,
+                borderWidth: 1,
+                elevation: 0,
+              },
+            ]}
             onPress={onClose}
           >
-            <Text style={[styles.textStyle, { color: getBackgroundColor() }]}>Cerrar</Text>
+            {/* Texto del botón oscuro para contraste */}
+            <Text style={[styles.textStyle, { color: colors.black }]}>Cerrar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -49,25 +59,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(250, 250, 250, 0.85)', // Velo blanco translúcido restaurado
   },
   modalView: {
     marginHorizontal: spacing.xl,
-    marginVertical: 20, // Mantener o ajustar según preferencia
-    width: '80%', // Mantener si se desea un ancho fijo, o quitar para que se ajuste al contenido con el padding
-    backgroundColor: colors.lighterGray, // Color base, el específico se aplica inline
+    marginVertical: 20,
+    width: '80%',
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.xl,
     alignItems: 'center',
-    ...shadow.md, // Aplicar el estilo de sombra de la app
-    // Se eliminan borderWidth y borderColor personalizados
+    ...shadow.md,
+    borderWidth: 2,
+    // borderColor se aplica inline
   },
   button: {
-    borderRadius: radius.lg, // Usar radius.lg para consistencia con otros botones
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm, // Ajustar padding vertical
-    elevation: 2, // Mantener o ajustar según shadow.md si es necesario
-    marginTop: 15,
+    borderRadius: radius.md, // Consistencia con botones de [id].tsx
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg, // Consistencia
+    elevation: 2,
+    minWidth: 100, // Consistencia
+    alignItems: 'center', // Consistencia
+    marginTop: spacing.lg, // Usar constante de espaciado
   },
   textStyle: {
     fontWeight: 'bold',
@@ -76,7 +88,7 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
-    color: colors.white,
+    color: colors.black,
     fontSize: 16,
   },
 });

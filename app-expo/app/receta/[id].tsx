@@ -1,54 +1,108 @@
 import useMarcarFavorito from '@/hooks/useMarcarFavorito';
 import useObtenerReceta from '@/hooks/useObtenerReceta';
+import useRegenerarReceta from '@/hooks/useRegenerarReceta';
 import { colors } from '@/styles/colors';
 import { radius, shadow, spacing, typography } from '@/styles/styles';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, ChefHat, Clock, Cookie, Droplets, Dumbbell, Flame, Heart, RefreshCw, Users } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  ChefHat,
+  Clock,
+  Cookie,
+  Droplets,
+  Dumbbell,
+  Flame,
+  Heart,
+  RefreshCw,
+  Users,
+} from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DetalleRecetaScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const recetaId = parseInt(id, 10);
-  
-  const { receta, cargando, error } = useObtenerReceta(recetaId);
+
+  // Hooks
+  const { receta: recetaApi, cargando, error } = useObtenerReceta(recetaId);
   const { marcarFavorito } = useMarcarFavorito();
+  const {
+    regenerar,
+    cargando: cargandoRegenerar,
+    error: errorRegenerar,
+  } = useRegenerarReceta();
+
+  // Estado local para la receta (permite actualizar tras regenerar)
+  const [receta, setReceta] = useState<typeof recetaApi | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [userPrompt, setUserPrompt] = useState('');
 
+  // Sincroniza la receta local con la de la API al cargar
   useEffect(() => {
-    if (receta?.recipe) {
-      setIsFavorite(receta.recipe.favorite);
+    if (recetaApi) {
+      setReceta(recetaApi);
+      setIsFavorite(recetaApi.recipe.favorite);
     }
-  }, [receta]);
+  }, [recetaApi]);
 
+  // Actualiza favorito localmente y en backend
   const toggleFavorite = async () => {
-    // Actualización optimista
-    setIsFavorite(prevState => !prevState);
-    
+    setIsFavorite((prev) => !prev);
     try {
       await marcarFavorito(recetaId);
     } catch (error) {
-      // Si hay error, revertimos el estado
-      setIsFavorite(prevState => !prevState);
+      setIsFavorite((prev) => !prev);
       console.error('Error al marcar como favorito:', error);
     }
   };
 
-  if (cargando) {
+  // Regenerar receta y actualizar estado local
+  const handleRegenerar = async () => {
+    if (!userPrompt.trim()) {
+      // Opcional: mostrar alerta si el prompt está vacío
+      alert('Por favor, ingresa un prompt para regenerar la receta.');
+      return;
+    }
+    setModalVisible(false);
+    const nuevaReceta = await regenerar(recetaId, { userPrompt });
+    if (nuevaReceta) {
+      setReceta(nuevaReceta);
+      setIsFavorite(nuevaReceta.recipe.favorite);
+    }
+    setUserPrompt(''); // Limpiar el prompt después de usarlo
+  };
+
+  const openRegenerateModal = () => {
+    setModalVisible(true);
+  };
+
+  if (cargando || cargandoRegenerar) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.text, { marginTop: spacing.md }]}>Cargando receta...</Text>
+        <Text style={[styles.text, { marginTop: spacing.md }]}>
+          {cargandoRegenerar ? 'Regenerando receta...' : 'Cargando receta...'}
+        </Text>
       </View>
     );
   }
 
-  if (error) {
+  if (error || errorRegenerar) {
     return (
       <View style={[styles.container, styles.centered]}>
         <Text style={[styles.text, { color: colors.red }]}>
-          Error al cargar la receta: {error.message}
+          Error: {error?.message || errorRegenerar?.message}
         </Text>
       </View>
     );
@@ -64,7 +118,10 @@ export default function DetalleRecetaScreen() {
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
-      <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollViewContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.headerActions}>
             <TouchableOpacity
@@ -76,12 +133,19 @@ export default function DetalleRecetaScreen() {
             <View style={styles.rightHeaderActions}>
               <TouchableOpacity
                 style={styles.regenerateButton}
-                onPress={() => console.log('Regenerar receta (funcionalidad pendiente)')}
+                onPress={openRegenerateModal}
+                disabled={cargandoRegenerar}
               >
-                <RefreshCw size={24} color={colors.primary} />
+                <RefreshCw
+                  size={24}
+                  color={cargandoRegenerar ? colors.gray : colors.primary}
+                />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.favoriteButton, isFavorite && styles.favoriteButtonActive]}
+                style={[
+                  styles.favoriteButton,
+                  isFavorite && styles.favoriteButtonActive,
+                ]}
                 onPress={toggleFavorite}
               >
                 <Heart
@@ -94,22 +158,71 @@ export default function DetalleRecetaScreen() {
           </View>
         </View>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+            setUserPrompt(''); // Limpiar el prompt si se cierra el modal
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                Describe cómo te gustaría regenerar la receta:
+              </Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setUserPrompt}
+                value={userPrompt}
+                placeholder="Ej: más picante, menos ingredientes..."
+                multiline
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    setUserPrompt(''); // Limpiar el prompt
+                  }}
+                >
+                  <Text style={styles.textStyleCancel}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonSubmit]}
+                  onPress={handleRegenerar}
+                  disabled={cargandoRegenerar || !userPrompt.trim()}
+                >
+                  <Text style={styles.textStyle}>Regenerar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
         <View style={styles.content}>
           <View style={styles.cabeceraReceta}>
             <Text style={styles.tituloReceta}>{receta.recipe.title}</Text>
-            <Text style={styles.descripcionReceta}>{receta.recipe.description}</Text>
+            <Text style={styles.descripcionReceta}>
+              {receta.recipe.description}
+            </Text>
           </View>
 
           <View style={styles.contenedorMeta}>
             <View style={styles.itemMeta}>
               <Clock size={20} color={colors.primary} strokeWidth={2} />
               <Text style={styles.etiquetaMeta}>Tiempo</Text>
-              <Text style={styles.valorMeta}>{receta.recipe.prep_time} min</Text>
+              <Text style={styles.valorMeta}>
+                {receta.recipe.prep_time} min
+              </Text>
             </View>
             <View style={styles.itemMeta}>
               <Users size={20} color={colors.primary} strokeWidth={2} />
               <Text style={styles.etiquetaMeta}>Porciones</Text>
-              <Text style={styles.valorMeta}>{receta.recipe.number_of_servings}</Text>
+              <Text style={styles.valorMeta}>
+                {receta.recipe.number_of_servings}
+              </Text>
             </View>
             <View style={styles.itemMeta}>
               <ChefHat size={20} color={colors.primary} strokeWidth={2} />
@@ -123,22 +236,30 @@ export default function DetalleRecetaScreen() {
             <View style={styles.gridNutricion}>
               <View style={styles.itemNutricion}>
                 <Flame size={24} color={colors.primary} strokeWidth={2} />
-                <Text style={styles.valorNutricion}>{receta.recipe.calories}</Text>
+                <Text style={styles.valorNutricion}>
+                  {receta.recipe.calories}
+                </Text>
                 <Text style={styles.etiquetaNutricion}>Calorías</Text>
               </View>
               <View style={styles.itemNutricion}>
                 <Dumbbell size={24} color={colors.primary} strokeWidth={2} />
-                <Text style={styles.valorNutricion}>{receta.recipe.protein}g</Text>
+                <Text style={styles.valorNutricion}>
+                  {receta.recipe.protein}g
+                </Text>
                 <Text style={styles.etiquetaNutricion}>Proteínas</Text>
               </View>
               <View style={styles.itemNutricion}>
                 <Cookie size={24} color={colors.primary} strokeWidth={2} />
-                <Text style={styles.valorNutricion}>{receta.recipe.carbohydrates}g</Text>
+                <Text style={styles.valorNutricion}>
+                  {receta.recipe.carbohydrates}g
+                </Text>
                 <Text style={styles.etiquetaNutricion}>Carbohidratos</Text>
               </View>
               <View style={styles.itemNutricion}>
                 <Droplets size={24} color={colors.primary} strokeWidth={2} />
-                <Text style={styles.valorNutricion}>{receta.recipe.fat}g</Text>
+                <Text style={styles.valorNutricion}>
+                  {receta.recipe.fat}g
+                </Text>
                 <Text style={styles.etiquetaNutricion}>Grasas</Text>
               </View>
             </View>
@@ -151,7 +272,8 @@ export default function DetalleRecetaScreen() {
                 <View key={index} style={styles.itemIngrediente}>
                   <View style={styles.puntoIngrediente} />
                   <Text style={styles.textoIngrediente}>
-                    {ingrediente.quantity} {ingrediente.unit} de {ingrediente.name}
+                    {ingrediente.quantity} {ingrediente.unit} de{' '}
+                    {ingrediente.name}
                     {ingrediente.note ? ` (${ingrediente.note})` : ''}
                   </Text>
                 </View>
@@ -181,7 +303,7 @@ export default function DetalleRecetaScreen() {
 const styles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.white, // Corregido: colors.background -> colors.white
   },
   scrollViewContainer: {
     flex: 1,
@@ -371,5 +493,74 @@ const styles = StyleSheet.create({
     fontSize: typography.body1,
     color: colors.black,
     lineHeight: typography.body1 * 1.4,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: spacing.md,
+    backgroundColor: colors.white,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    alignItems: 'center',
+    ...shadow.md, // Corregido: shadow.lg -> shadow.md
+    width: '90%', // Ancho del modal
+    borderWidth: 2, // Añadir grosor del borde
+    borderColor: colors.primary, // Añadir color del borde
+  },
+  modalText: {
+    fontSize: typography.body1, // Corregido: typography.bodyLarge -> typography.body1
+    marginBottom: spacing.md,
+    textAlign: 'center',
+    color: colors.black, // Corregido: colors.text -> colors.black
+  },
+  input: {
+    fontSize: typography.body1, // Corregido: typography.body -> typography.body1
+    height: 100, // Altura aumentada para multilínea
+    borderColor: colors.lightGray, // Corregido: colors.border -> colors.lightGray
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    textAlignVertical: 'top', // Para multilínea en Android
+    width: '100%',
+    backgroundColor: colors.lighterGray, // Corregido: colors.inputBackground -> colors.lighterGray
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around', // Espacio entre botones
+    width: '100%',
+  },
+  button: {
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm, // Padding vertical
+    paddingHorizontal: spacing.lg, // Padding horizontal
+    elevation: 2, // Sombra para Android
+    minWidth: 100, // Ancho mínimo para los botones
+    alignItems: 'center', // Centrar texto del botón
+  },
+  buttonClose: {
+    backgroundColor: 'transparent', // Sin fondo
+    borderColor: colors.gray,       // Borde gris
+    borderWidth: 1,                 // Grosor del borde
+    elevation: 0,                   // Sin sombra
+    marginRight: spacing.sm,
+  },
+  buttonSubmit: {
+    backgroundColor: colors.primary,
+  },
+  textStyle: {
+    fontSize: typography.body1, // Corregido: typography.button -> typography.body1
+    fontWeight: 'bold', // Añadido para emular estilo de botón
+    color: colors.white, // Color de texto para el botón de regenerar
+    textAlign: 'center',
+  },
+  textStyleCancel: { // Nuevo estilo para el texto del botón cancelar
+    fontSize: typography.body1,
+    fontWeight: 'bold',
+    color: colors.black, // Texto oscuro para fondo claro
+    textAlign: 'center',
   },
 });

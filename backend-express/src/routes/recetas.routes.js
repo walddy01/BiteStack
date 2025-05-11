@@ -6,7 +6,6 @@ const checkAuth = require("../../middleware/checkAuth.js");
 router.get("/favoritas", checkAuth, recetasController.getRecetasFavoritas);
 router.patch("/favorito/:id", checkAuth, recetasController.alternarFavorito);
 router.get("/:receta_id", checkAuth, recetasController.getReceta);
-router.get("/generarRecetaMock/:userPrompt", recetasController.generarRecetaMock);
-router.get("/generarRecetaAI/:userPrompt", recetasController.generarRecetaAI);
+router.post("/regenerar/:idReceta", checkAuth, recetasController.regenerarReceta);
 
 module.exports = router;

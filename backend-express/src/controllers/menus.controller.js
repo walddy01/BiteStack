@@ -325,29 +325,31 @@ const generarMenu = async (req, res) => {
   console.time("generate-IA");
   const generarRecetaAI = async prompt => {
     const systemPrompt = `
-      Generate a recipe in JSON format with the following structure:
-      - **title**: Short and concise recipe title.
-      - **description**: Brief summary of the recipe.
-      - **number_of_servings**: Number of people the recipe serves.
-      - **difficulty**: Difficulty level of the recipe (e.g., Fácil, Media,
-        Difícil).
-      - **prep_time**: Preparation time in minutes.
-      - **ingredients**: Array of ingredients, each with:
-          - **ingredient**: Name. Must start with capital letter.
-          - **notes**: Additional details (optional).
-          - **amount**: Numeric.
-          - **unit**: SI units only (grams, milliliters, liters).
-      - **instructions**: Array of step-by-step instructions.
-      - **total_calories_per_serving**: Calories per serving.
-      - **protein_per_serving**: Grams of protein per serving.
-      - **carbohydrates_per_serving**: Grams of carbs per serving.
-      - **fat_per_serving**: Grams of fat per serving.
+    Generate a recipe in JSON format with the following structure:
+    - **title**: Short and concise recipe title.
+    - **description**: Brief summary of the recipe.
+    - **number_of_servings**: Number of people the recipe serves.
+    - **difficulty**: Difficulty level of the recipe (e.g., Fácil, Media, Difícil).
+    - **prep_time**: Preparation time in minutes.
+    - **ingredients**: Array of ingredients, each with:
+        - **ingredient**: Name of the ingredient. Must start with capital letter (e.g., "Arroz", "Leche", "Tomate").
+        - **notes**: Additional details about the ingredient (optional).
+        - **amount**: Numeric value indicating the quantity.
+        - **unit**: **Use only units from the International System of Units (SI)** (grams, milliliters, liters).
+    - **instructions**: Array of step-by-step instructions.
+    - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings).
+    - **protein_per_serving**: Grams of protein per serving.
+    - **carbohydrates_per_serving**: Grams of carbohydrates per serving.
+    - **fat_per_serving**: Grams of fat per serving.
 
-      ### Important Notes:
-      - The recipe **must be in Spanish**.
-      - **Field names MUST remain in English**.
-      - **Ingredient names MUST start with capital letter**.
-      - Use SI units only.
+    ### Important Notes:
+    - The recipe **must be in Spanish**.
+    - **Field names MUST remain in English**, as specified above.
+    - **Ingredient names MUST start with capital letter** to maintain consistency.
+    - **Ingredient Notes**: Use the "notes" field for an ingredient only when it's genuinely necessary for clarification (e.g., "Tomatoes, ripe", "Milk, preferably whole"). Avoid using "notes" for trivial details that are obvious or don't significantly impact the recipe.
+    - Provide specific ingredient quantities and clear instructions.
+    - Ensure that **nutritional values are calculated per serving** (divide total by number_of_servings).
+    - **Use only International System of Units (SI) measurements**: grams (g), milliliters (ml), liters (l), and degrees Celsius (°C). Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit.
     `;
     const completion = await openai.beta.chat.completions.parse({
       model: "gemini-2.0-flash-lite",
