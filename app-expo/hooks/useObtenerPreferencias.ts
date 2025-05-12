@@ -54,7 +54,7 @@ export default function useObtenerPreferencias() {
     };
 
     fetchPreferencias();
-  }, []); // Sin dependencias, se ejecuta una vez al montar
+  }, []);
 
   return {
     preferencias,

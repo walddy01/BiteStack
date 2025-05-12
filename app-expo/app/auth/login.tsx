@@ -1,10 +1,9 @@
-// src/screens/LoginScreen.tsx
 import { useAuth } from "@/hooks/useAuth";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { styles } from "@/styles/auth/login.styles"; // Updated import path
+import { styles } from "@/styles/auth/login.styles";
 
 export default function LoginScreen() {
   const { signIn, cargando, error: authError, session } = useAuth();
@@ -12,7 +11,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Redirige si ya hay sesión
   useEffect(() => {
     if (session) {
       router.replace("/(tabs)");

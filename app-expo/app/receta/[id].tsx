@@ -303,7 +303,7 @@ export default function DetalleRecetaScreen() {
 const styles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,
-    backgroundColor: colors.white, // Corregido: colors.background -> colors.white
+    backgroundColor: colors.white,
   },
   scrollViewContainer: {
     flex: 1,
@@ -505,62 +505,62 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     alignItems: 'center',
-    ...shadow.md, // Corregido: shadow.lg -> shadow.md
-    width: '90%', // Ancho del modal
-    borderWidth: 2, // Añadir grosor del borde
-    borderColor: colors.primary, // Añadir color del borde
+    ...shadow.md,
+    width: '90%',
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   modalText: {
-    fontSize: typography.body1, // Corregido: typography.bodyLarge -> typography.body1
+    fontSize: typography.body1,
     marginBottom: spacing.md,
     textAlign: 'center',
-    color: colors.black, // Corregido: colors.text -> colors.black
+    color: colors.black,
   },
   input: {
-    fontSize: typography.body1, // Corregido: typography.body -> typography.body1
-    height: 100, // Altura aumentada para multilínea
-    borderColor: colors.lightGray, // Corregido: colors.border -> colors.lightGray
+    fontSize: typography.body1,
+    height: 100,
+    borderColor: colors.lightGray,
     borderWidth: 1,
     borderRadius: radius.md,
     padding: spacing.md,
     marginBottom: spacing.lg,
-    textAlignVertical: 'top', // Para multilínea en Android
+    textAlignVertical: 'top',
     width: '100%',
-    backgroundColor: colors.lighterGray, // Corregido: colors.inputBackground -> colors.lighterGray
+    backgroundColor: colors.lighterGray,
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around', // Espacio entre botones
+    justifyContent: 'space-around',
     width: '100%',
   },
   button: {
     borderRadius: radius.md,
-    paddingVertical: spacing.sm, // Padding vertical
-    paddingHorizontal: spacing.lg, // Padding horizontal
-    elevation: 2, // Sombra para Android
-    minWidth: 100, // Ancho mínimo para los botones
-    alignItems: 'center', // Centrar texto del botón
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    elevation: 2,
+    minWidth: 100,
+    alignItems: 'center',
   },
   buttonClose: {
-    backgroundColor: 'transparent', // Sin fondo
-    borderColor: colors.gray,       // Borde gris
-    borderWidth: 1,                 // Grosor del borde
-    elevation: 0,                   // Sin sombra
+    backgroundColor: 'transparent',
+    borderColor: colors.gray,
+    borderWidth: 1,
+    elevation: 0,
     marginRight: spacing.sm,
   },
   buttonSubmit: {
     backgroundColor: colors.primary,
   },
   textStyle: {
-    fontSize: typography.body1, // Corregido: typography.button -> typography.body1
-    fontWeight: 'bold', // Añadido para emular estilo de botón
-    color: colors.white, // Color de texto para el botón de regenerar
-    textAlign: 'center',
-  },
-  textStyleCancel: { // Nuevo estilo para el texto del botón cancelar
     fontSize: typography.body1,
     fontWeight: 'bold',
-    color: colors.black, // Texto oscuro para fondo claro
+    color: colors.white,
+    textAlign: 'center',
+  },
+  textStyleCancel: {
+    fontSize: typography.body1,
+    fontWeight: 'bold',
+    color: colors.black,
     textAlign: 'center',
   },
 });

@@ -1,7 +1,6 @@
-// Index.tsx
-import { useCallback, useEffect, useState } from 'react' // Añadido useCallback
+import { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native'; // Importar useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 import { styles } from '../../styles/globalStyles'
 import AlertPersonalizado from '@/components/AlertPersonalizado'
 import Preferencias from '@/components/Preferencias'
@@ -16,20 +15,14 @@ import { colors } from '../../styles/colors'
 export default function Index() {
   const { session } = useAuth()
   const [editarPreferencias, setEditarPreferencias] = useState(false)
-
-  // estados para AlertPersonalizado
   const [alertaVisible, setAlertaVisible] = useState(false)
   const [alertaMensaje, setAlertaMensaje] = useState('')
   const [alertaTipo, setAlertaTipo] = useState<'exito' | 'error' | 'info'>('info')
-
-  // para activar/desactivar comidas
   const [comidasActivas, setComidasActivas] = useState({
     desayuno: true,
     almuerzo: true,
     cena: true,
   })
-
-  // preferencias y su copia original
   const [preferencias, setPreferencias] = useState({
     dieta: 'Alta en proteínas',
     calorias: 450,
@@ -39,11 +32,9 @@ export default function Index() {
   })
   const [preferenciasOriginales, setPreferenciasOriginales] = useState(preferencias)
 
-  // hook para obtener prefs de BD
   const {
     preferencias: preferenciasDB,
     cargando: cargandoObtenerPrefs,
-    // error: errorObtenerPrefs,
   } = useObtenerPreferencias()
 
   useEffect(() => {
@@ -53,7 +44,6 @@ export default function Index() {
     }
   }, [preferenciasDB])
 
-  // hook para actualizar prefs
   const {
     actualizar: actualizarPrefs,
   } = useActualizarPreferencias()
@@ -86,7 +76,6 @@ export default function Index() {
     setEditarPreferencias(false)
   }
 
-  // hook para generar menú
   const {
     generar,
     cargando: cargandoGenerarMenu,
@@ -94,7 +83,6 @@ export default function Index() {
     respuesta: respuestaGenerarMenu,
   } = useGenerarMenu()
 
-  // hook para obtener menú y refrescarlo
   const {
     menuData,
     cargando: cargandoMenu,
@@ -102,14 +90,13 @@ export default function Index() {
     refrescarMenu,
   } = useObtenerMenuSemana()
 
-  // Refrescar el menú cada vez que la pantalla obtiene el foco
   useFocusEffect(
     useCallback(() => {
-      if (session) { // Solo refrescar si hay sesión
+      if (session) {
         console.log('[IndexScreen] Pantalla en foco, refrescando menú...');
         refrescarMenu();
       }
-    }, [session, refrescarMenu]) // Asegúrate de que refrescarMenu sea estable o inclúyelo si cambia
+    }, [session, refrescarMenu])
   );
 
   const generarMenu = async () => {
@@ -123,7 +110,6 @@ export default function Index() {
     }
   }
 
-  // alerta mientras esté generando
   useEffect(() => {
     if (cargandoGenerarMenu) {
       setAlertaMensaje('Generando menú...')
@@ -132,7 +118,6 @@ export default function Index() {
     }
   }, [cargandoGenerarMenu])
 
-  // alerta si hay error al generar
   useEffect(() => {
     if (errorGenerarMenu) {
       setAlertaMensaje(errorGenerarMenu.message)
@@ -141,7 +126,6 @@ export default function Index() {
     }
   }, [errorGenerarMenu])
 
-  // alerta solo cuando llega respuesta válida
   useEffect(() => {
     if (respuestaGenerarMenu) {
       setAlertaMensaje('Menú generado con éxito')
@@ -150,7 +134,6 @@ export default function Index() {
     }
   }, [respuestaGenerarMenu])
 
-  // carga primeras prefs
   if (cargandoObtenerPrefs) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
@@ -160,7 +143,6 @@ export default function Index() {
     )
   }
 
-  // si no hay sesión
   if (!session && !cargandoObtenerPrefs) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>

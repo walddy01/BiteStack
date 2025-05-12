@@ -9,17 +9,14 @@ export const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center', // Centrar el contenido del ScrollView
+    justifyContent: 'center',
   },
   container: {
-    // Quitar flex: 1 de globalStyles.container si lo tiene, o manejar aquí
-    // flex: 1, // Si se necesita que ocupe toda la altura disponible dentro del ScrollView
     justifyContent: "center",
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxl,
     backgroundColor: colors.white,
     alignItems: 'center',
-    // marginTop: 'auto', // Puede no ser necesario si scrollContainer ya centra
   },
   logo: {
     width: 150,
@@ -29,12 +26,10 @@ export const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   title: {
-    // fontSize y fontWeight se heredan de globalStyles.title si se usa
-    // Si no, definir aquí: fontSize: typography.h1, fontWeight: 'bold',
     textAlign: "center",
     marginBottom: spacing.xl,
     color: colors.primary,
-    fontSize: typography.h1, // Asegurar que el tamaño sea el esperado
+    fontSize: typography.h1,
     fontWeight: 'bold',
   },
   input: {
@@ -65,12 +60,10 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: colors.primary,
-    marginTop: spacing.sm, // Margen superior para separar del botón primario
+    marginTop: spacing.sm,
   },
   secondaryButtonText: {
     color: colors.primary,
-    // fontSize y fontWeight se heredan de buttonText si se combinan estilos
-    // o definir aquí si es diferente: fontSize: typography.body1, fontWeight: "bold",
   },
   errorText: {
     color: colors.red,
@@ -80,8 +73,6 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   activityIndicator: {
-    // No es necesario marginBottom si el botón que reemplaza ya tiene marginBottom
-    // Considerar solo marginTop o ajustar el layout de los botones
-    marginVertical: spacing.lg, // Usar marginVertical para espaciado arriba y abajo
+    marginVertical: spacing.lg,
   }
 });

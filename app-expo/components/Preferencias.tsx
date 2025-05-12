@@ -1,8 +1,8 @@
 import { Check, Pencil, WandSparkles, X } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { colors } from '../styles/colors';
-import { styles as globalStyles } from '../styles/globalStyles'; // Estilos globales generales
-import { styles as componentStyles } from '../styles/components/Preferencias.styles'; // Estilos específicos del componente
+import { styles as globalStyles } from '../styles/globalStyles';
+import { styles as componentStyles } from '../styles/components/Preferencias.styles';
 
 interface Props {
 	preferencias: {
@@ -83,7 +83,6 @@ export default function Preferencias({
 					)}
 				</View>
 
-				{/* PREFERENCIAS DE COMIDAS */}
 				{editarPreferencias ? (
 					<View style={componentStyles.preferencesDetails}>
 						<View style={componentStyles.preferenceItem}>
@@ -178,7 +177,6 @@ export default function Preferencias({
 					</View>
 				)}
 
-				{/* BOTONES DE COMIDAS */}
 				<View style={componentStyles.comidasContainer}>
 					<Pressable
 						style={[

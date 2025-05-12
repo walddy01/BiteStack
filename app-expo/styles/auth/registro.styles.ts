@@ -12,9 +12,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
-    // Consider removing flex: 1 from globalStyles.container if it exists,
-    // or manage layout specifically here if needed.
-    // flex: 1, // Uncomment if full height within ScrollView is desired
     justifyContent: "center",
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxl,
@@ -29,18 +26,16 @@ export const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   title: {
-    // fontSize and fontWeight can be inherited from globalStyles.title if used globally
-    // Otherwise, define explicitly: fontSize: typography.h1, fontWeight: 'bold',
     textAlign: "center",
     marginBottom: spacing.lg,
     color: colors.primary,
-    fontSize: typography.h1, // Ensure desired size
+    fontSize: typography.h1,
     fontWeight: 'bold',
   },
   stepTitle: {
     fontSize: typography.body1,
     fontWeight: 'bold',
-    color: colors.black, // Or another color from your palette
+    color: colors.black,
     marginBottom: spacing.lg,
     textAlign: 'center',
   },
@@ -56,24 +51,23 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   textArea: {
-    height: 100, // Adjust height as needed for multiline input
-    textAlignVertical: 'top', // Align text to the top for multiline
+    height: 100,
+    textAlignVertical: 'top',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Or 'space-around' based on desired spacing
+    justifyContent: 'space-between',
     width: '100%',
     marginTop: spacing.md,
   },
   button: {
     backgroundColor: colors.primary,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg, // Ensure consistent padding
+    paddingHorizontal: spacing.lg,
     borderRadius: radius.md,
     alignItems: "center",
-    // marginBottom: spacing.md, // Removed as buttons are now in a container
-    flex: 1, // Distribute space if multiple buttons in a row
-    marginHorizontal: spacing.xs, // Add small horizontal margin between buttons
+    flex: 1,
+    marginHorizontal: spacing.xs,
   },
   buttonText: {
     color: colors.white,
@@ -89,7 +83,7 @@ export const styles = StyleSheet.create({
     color: colors.primary,
   },
   loginLink: {
-    marginTop: spacing.lg, // Increased spacing from buttons
+    marginTop: spacing.lg,
   },
   loginLinkText: {
     color: colors.primary,
@@ -104,6 +98,6 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   activityIndicator: {
-    marginVertical: spacing.lg, // Consistent vertical spacing
+    marginVertical: spacing.lg,
   }
 });

@@ -11,82 +11,81 @@ export const styles = StyleSheet.create({
   },
   wrapper: { 
     flex: 1, 
-    backgroundColor: colors.white, 
-    paddingBottom: spacing.sm // Usar constante de espaciado
+    backgroundColor: colors.lighterGray, 
+    paddingBottom: spacing.sm 
   },
   mainTitle: {
-    fontSize: 24, // Original: 24, typography.h1 es 28
+    fontSize: 24,
     fontWeight: 'bold',
-    marginTop: spacing.lg, // Usar constante de espaciado
-    marginBottom: spacing.xs, // Usar constante de espaciado
-    marginLeft: spacing.xl, // Usar constante de espaciado
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
+    marginLeft: spacing.xl,
     color: colors.black,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Asegurar que los elementos se distribuyan
-    paddingHorizontal: spacing.xl, // Usar constante de espaciado
-    marginBottom: spacing.sm, // Usar constante de espaciado
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.sm,
   },
   dayText: {
-    flex: 1, // Permitir que el texto ocupe el espacio central
+    flex: 1,
     textAlign: 'center',
-    fontSize: typography.h2, // Original: 20, typography.h2 es 20 (sin cambio)
+    fontSize: typography.h2,
     fontWeight: 'bold',
     color: colors.black,
   },
   dayContainer: { 
     width: windowWidth, 
-    paddingHorizontal: spacing.xl // Usar constante de espaciado
+    paddingHorizontal: spacing.xl 
   },
   recipesContainer: { 
-    paddingVertical: spacing.sm // Usar constante de espaciado
+    paddingVertical: spacing.sm 
   },
   recipeCard: {
     backgroundColor: colors.white,
-    borderRadius: radius.lg, // Usar constante de radio
-    padding: spacing.xl, // Usar constante de espaciado
-    ...shadow.md, // Usar constante de sombra
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+    ...shadow.md,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
-    // marginBottom se maneja con recipeCardMargin para el último elemento
   },
   recipeCardMargin: {
-    marginBottom: spacing.xl, // Usar constante de espaciado
+    marginBottom: spacing.xl,
   },
   recipeHeader: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    marginBottom: spacing.md, // Usar constante de espaciado
-    gap: spacing.md // Usar constante de espaciado
+    marginBottom: spacing.md, 
+    gap: spacing.md 
   },
   recipeTitle: { 
     flex: 1, 
-    fontSize: 18, // Original: 18, typography.body1 es 16
-    fontWeight: '700', // Un poco más de peso
+    fontSize: 18,
+    fontWeight: '700',
     color: colors.black 
   },
   recipeDescription: {
-    fontSize: 15, // Original: 15, typography.body2 es 14
+    fontSize: 15,
     color: colors.gray,
-    lineHeight: 15 * 1.4, // Ajustar interlineado al nuevo tamaño (original implícito)
-    marginBottom: spacing.md, // Usar constante de espaciado
+    lineHeight: 15 * 1.4,
+    marginBottom: spacing.md,
   },
   recipeInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: colors.lightGray,
-    paddingTop: spacing.lg, // Usar constante de espaciado
+    paddingTop: spacing.lg,
   },
   infoItem: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    gap: spacing.sm // Usar constante de espaciado
+    gap: spacing.sm 
   },
   infoText: { 
-    fontSize: typography.body2, // Original: 14, typography.caption es 12. typography.body2 es 14
+    fontSize: typography.body2,
     color: colors.gray, 
     fontWeight: '500' 
   },
@@ -94,31 +93,30 @@ export const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    padding: spacing.xl // Usar constante de espaciado
+    padding: spacing.xl 
   },
   loadingText: { 
-    marginTop: spacing.sm, // Usar constante de espaciado
-    fontSize: typography.body1, // Original: 16, typography.body1 es 16 (sin cambio)
+    marginTop: spacing.sm,
+    fontSize: typography.body1,
     color: colors.gray 
   },
   errorText: { 
-    fontSize: 18, // Original: 18, typography.h2 es 20
+    fontSize: 18,
     fontWeight: 'bold', 
-    color: colors.red, // Usar color de la paleta
+    color: colors.red,
     textAlign: 'center', 
-    marginBottom: spacing.xs // Añadir espacio inferior
+    marginBottom: spacing.xs 
   },
   errorTextDetail: { 
-    fontSize: typography.body2, // Original: 14, typography.body2 es 14 (sin cambio)
+    fontSize: typography.body2,
     color: colors.gray, 
     textAlign: 'center' 
   },
   noDataText: { 
-    fontSize: typography.body1, // Original: 16, typography.body1 es 16 (sin cambio)
+    fontSize: typography.body1,
     color: colors.gray 
   },
-  // Estilos para los botones de navegación del slider (ChevronLeft, ChevronRight)
   navButton: {
-    padding: spacing.xs, // Añadir un poco de padding para facilitar el toque
+    padding: spacing.xs,
   }
 });

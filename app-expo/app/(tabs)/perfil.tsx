@@ -2,21 +2,19 @@ import { colors } from "@/styles/colors";
 import { radius, spacing, typography } from "@/styles/globalStyles";
 import { useRouter } from "expo-router";
 import { ChevronRight, Edit3, HelpCircle, Info, LogOut, ShieldCheck, UserCircle2 } from 'lucide-react-native';
-import React, { useState } from 'react'; // React es necesario para JSX
+import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from "../../hooks/useAuth";
-import AlertPersonalizado from '@/components/AlertPersonalizado'; // Asegúrate que este componente también maneje sus textos correctamente
+import AlertPersonalizado from '@/components/AlertPersonalizado';
 
 export default function Perfil() {
   const { session, signOut } = useAuth();
   const router = useRouter();
 
-  // Estados para el AlertPersonalizado
   const [alertaVisible, setAlertaVisible] = useState(false);
   const [alertaMensaje, setAlertaMensaje] = useState('');
   const [alertaTipo, setAlertaTipo] = useState<'exito' | 'error' | 'info'>('info');
 
-  // Función helper para mostrar la alerta
   const mostrarAlerta = (mensaje: string, tipo: 'exito' | 'error' | 'info' = 'info') => {
     setAlertaMensaje(mensaje);
     setAlertaTipo(tipo);
@@ -33,13 +31,10 @@ export default function Perfil() {
     }
   };
 
-  // Construcción del nombre completo del usuario, asegurando que siempre sea un string.
   const userName = session?.user?.user_metadata?.nombre;
   const userLastName = session?.user?.user_metadata?.apellidos;
   const userFullName = userName && userLastName ? `${userName} ${userLastName}` : userName || "Usuario";
 
-  // Definición de las opciones del menú.
-  // Las funciones onPress ahora usan `mostrarAlerta`.
   const menuOptions = [
     { title: "Editar Perfil", icon: <Edit3 size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
     { title: "Seguridad", icon: <ShieldCheck size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
@@ -52,7 +47,6 @@ export default function Perfil() {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           {session ? (
-            // --- VISTA PARA USUARIO CON SESIÓN ACTIVA ---
             <View style={styles.container}>
               <View style={styles.profileHeader}>
                 <UserCircle2 size={80} color={colors.primary} strokeWidth={1.5} />
@@ -79,7 +73,6 @@ export default function Perfil() {
               </TouchableOpacity>
             </View>
           ) : (
-            // --- VISTA PARA USUARIO SIN SESIÓN (INVITADO) ---
             <View style={styles.authContainer}>
               <UserCircle2 size={80} color={colors.gray} strokeWidth={1.5} />
               <Text style={styles.infoText}>

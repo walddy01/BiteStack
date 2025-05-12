@@ -9,11 +9,12 @@ export interface Recipe {
   prep_time: number;
   servings: number;
   difficulty: string;
+  favorite: boolean;
   date: string;
   mealType: string;
 }
 
-export interface DayMenu {
+export interface MenuHistorial {
   menuId: number;
   menuDate: string;
   recipes: Recipe[];
@@ -21,15 +22,15 @@ export interface DayMenu {
 
 interface APIResponse {
   message: string;
-  data: DayMenu;
+  data: MenuHistorial[];
 }
 
-export default function useObtenerMenuSemana() {
-  const [menuData, setMenuData] = useState<DayMenu | null>(null);
+export default function useObtenerHistorialMenus() {
+  const [menus, setMenus] = useState<MenuHistorial[]>([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchMenuSemana = useCallback(async () => {
+  const refrescar = useCallback(async () => {
     setCargando(true);
     setError(null);
 
@@ -38,21 +39,28 @@ export default function useObtenerMenuSemana() {
       const token = sessionData.session?.access_token;
 
       if (!token) {
-        throw new Error('Usuario no autenticado');
+        throw new Error('Usuario no autenticado para obtener historial de menús.');
       }
 
       const res = await axios.get<APIResponse>(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/menus/semana`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${process.env.EXPO_PUBLIC_API_URL}/api/menus/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      if (res.data.data?.menuId) {
-        setMenuData(res.data.data);
+      if (Array.isArray(res.data.data)) {
+        setMenus(res.data.data);
       } else {
-        setMenuData(null);
+        setMenus([]);
       }
     } catch (err: any) {
-      const mensaje = err.response?.data?.message || 'Error al obtener el menú';
+      const mensaje =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        'Error al obtener el historial de menús';
       setError(new Error(mensaje));
     } finally {
       setCargando(false);
@@ -60,13 +68,13 @@ export default function useObtenerMenuSemana() {
   }, []);
 
   useEffect(() => {
-    fetchMenuSemana();
-  }, [fetchMenuSemana]);
+    refrescar();
+  }, [refrescar]);
 
   return {
-    menuData,
+    menus,
     cargando,
     error,
-    refrescarMenu: fetchMenuSemana,
+    refrescar,
   };
 }

@@ -1,10 +1,9 @@
-// src/screens/RegistroScreen.tsx
 import { useAuth } from "@/hooks/useAuth";
 import { colors } from "@/styles/colors";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { styles } from "@/styles/auth/registro.styles"; // Updated import path
+import { styles } from "@/styles/auth/registro.styles";
 
 export default function RegistroScreen() {
   const { signUpApi } = useAuth();
@@ -19,7 +18,7 @@ export default function RegistroScreen() {
     preferencias: "",
   });
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState(1); // Estado para el paso actual del onboarding
+  const [step, setStep] = useState(1);
 
   const onChange = (key: string, val: string) =>
     setForm(f => ({ ...f, [key]: val }));
@@ -61,12 +60,11 @@ export default function RegistroScreen() {
   const prevStep = () => {
     if (step > 1) {
       setStep(step - 1);
-      setError(null); // Limpiar errores al retroceder
+      setError(null);
     }
   };
 
   const onSubmit = async () => {
-    // La validación final se hace antes de llamar a onSubmit desde el último paso
     try {
       setError(null);
       setLoading(true);
@@ -79,7 +77,6 @@ export default function RegistroScreen() {
         porciones: form.porciones ? Number(form.porciones) : undefined,
         preferencias_adicionales: form.preferencias.trim() || undefined,
       });
-
       if (response.error) {
         setError(response.error);
         setLoading(false);
@@ -175,7 +172,7 @@ export default function RegistroScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior="padding" // Modificado para usar padding en ambas plataformas
+      behavior="padding"
       style={styles.keyboardAvoidingContainer}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -183,9 +180,7 @@ export default function RegistroScreen() {
           <Image source={require('../../assets/icon.png')} style={styles.logo} />
           <Text style={styles.title}>Crear Cuenta</Text>
           {error && <Text style={styles.errorText}>{error}</Text>}
-
           {renderStepContent()}
-
           {loading ? (
             <ActivityIndicator size="large" color={colors.primary} style={styles.activityIndicator} />
           ) : (
@@ -206,11 +201,9 @@ export default function RegistroScreen() {
               )}
             </View>
           )}
-          {!loading && (
-            <TouchableOpacity style={styles.loginLink} onPress={() => router.push("/auth/login")}>
-              <Text style={styles.loginLinkText}>¿Ya tienes cuenta? Inicia Sesión</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.loginLink} onPress={() => router.replace('/auth/login')}>
+            <Text style={styles.loginLinkText}>¿Ya tienes cuenta? Inicia sesión</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

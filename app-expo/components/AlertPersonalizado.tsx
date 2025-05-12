@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
-import { styles as componentStyles } from '../styles/components/AlertPersonalizado.styles'; // Importar estilos del componente
+import { styles as componentStyles } from '../styles/components/AlertPersonalizado.styles';
 
 interface AlertPersonalizadoProps {
   visible: boolean;
@@ -37,9 +37,8 @@ const AlertPersonalizado: React.FC<AlertPersonalizadoProps> = ({ visible, mensaj
               componentStyles.button,
               {
                 backgroundColor: 'transparent',
-                borderColor: colors.gray, // Mantener borde gris para el botón cerrar
+                borderColor: colors.gray,
                 borderWidth: 1,
-                // elevation: 0, // Quitado, ya no está en el estilo base del botón
               },
             ]}
             onPress={onClose}

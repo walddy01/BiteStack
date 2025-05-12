@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 import { colors } from "./colors";
 
-// Constantes de diseño para mantener consistencia
 const typography = {
   h1: 28,
   h2: 20,
@@ -48,7 +47,7 @@ export { radius, shadow, spacing, typography };
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.lighterGray,
   },
   header: {
     paddingTop: spacing.xxxl,
@@ -75,22 +74,4 @@ export const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
-  // Estilos específicos de Preferencias movidos a components/Preferencias.styles.ts
-  // preferencesCard: { ... },
-  // preferencesHeader: { ... },
-  // editButton: { ... },
-  // cancelButton: { ... },
-  // saveButton: { ... },
-  // generarContainer: { ... },
-  // generarButton: { ... },
-  // comidasButton: { ... },
-  // comidasButtonActive: { ... },
-  // comidasContainer: { ... },
-  // preferencesDetails: { ... },
-  // preferenceItem: { ... },
-  // preferenceLabel: { ... },
-  // preferenceValue: { ... },
-  // preferenceInput: { ... },
-  // textAreaContainer: { ... },
-  // textArea: { ... },
 });
