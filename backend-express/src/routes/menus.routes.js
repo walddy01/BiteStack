@@ -8,5 +8,6 @@ router.get("/semana", checkAuth, menusController.getMenuSemanaUsuario);
 router.get("/listascompra", checkAuth, menusController.getListasCompraUsuario);
 router.patch("/listascompra/adquirido/:idLista/:idIngrediente", checkAuth, menusController.alternarAdquirido);
 router.post("/generar", checkAuth, menusController.generarMenu);
+router.get("/:id", checkAuth, menusController.getMenu);
 
 module.exports = router;

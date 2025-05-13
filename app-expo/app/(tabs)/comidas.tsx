@@ -227,8 +227,8 @@ export default function Comidas() {
                 ))}
                 {hayMas && (
                   <TouchableOpacity
-                    style={styles.verMasBoton} // Cambiado de styles.verMasContainer
-                    // onPress={() => ...} // Aquí puedes abrir un modal o navegar a la pantalla de detalle del menú
+                    style={styles.verMasBoton}
+                    onPress={() => router.push({ pathname: '/menu/[id]', params: { id: menu.menuId.toString() } } as any)}
                   >
                     <FontAwesome5 name="plus" size={14} color={colors.white} />
                     <Text style={styles.verMasBotonText}>Ver más recetas</Text>

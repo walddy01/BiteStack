@@ -27,6 +27,7 @@ import { DayMenu, Recipe } from '../hooks/useObtenerMenuSemana'
 import { styles as componentStyles } from '../styles/components/SliderRecetas.styles'
 import { styles as globalStyles } from '../styles/globalStyles'
 
+
 function obtenerIconoComida(tipoComida: string) {
   switch (tipoComida) {
     case 'Desayuno':
@@ -101,7 +102,7 @@ export default function SliderRecetas({
   const renderTarjeta = (receta: Recipe, esUltima: boolean) => (
     <TouchableOpacity
       key={receta.id}
-      style={[componentStyles.recipeCard, !esUltima && componentStyles.recipeCardMargin]}
+      style={[componentStyles.recipeCard]}
       activeOpacity={0.7}
       onPress={() => router.push({ pathname: '/receta/[id]', params: { id: receta.id.toString() } } as any)}
     >

@@ -534,10 +534,95 @@ const generarMenu = async (req, res) => {
   res.status(201).json({ message: "Menú generado correctamente", data: menuFormateado });
 };
 
+// GET /menus/:id
+const getMenu = async (req, res) => {
+  try {
+    const idUsuario = req.user.id;
+    const idMenu = parseInt(req.params.id, 10);
+
+    const menu = await prisma.menu.findFirst({
+      where: {
+        id: idMenu,
+        usuario_id: idUsuario,
+      },
+      include: {
+        recetasProgramadas: {
+          include: {
+            receta: {
+              select: {
+                id: true,
+                titulo: true,
+                descripcion: true,
+                tiempo_prep: true,
+                numero_raciones: true,
+                dificultad: true,
+                favorito: true,
+                instrucciones: true,
+                calorias: true,
+                proteinas: true,
+                carbohidratos: true,
+                grasas: true,
+                recetaIngrediente: {
+                  include: {
+                    ingrediente: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!menu) {
+      return res.status(404).json({
+        error: "Menú no encontrado",
+      });
+    }
+
+    const menuFormateado = {
+      id: menu.id,
+      menuDate: formatearFecha(menu.fecha_inicio_semana),
+      recipes: menu.recetasProgramadas.map((recetaProg) => ({
+        id: recetaProg.receta.id,
+        title: recetaProg.receta.titulo,
+        description: recetaProg.receta.descripcion,
+        prep_time: recetaProg.receta.tiempo_prep,
+        servings: recetaProg.receta.numero_raciones,
+        difficulty: recetaProg.receta.dificultad,
+        favorite: recetaProg.receta.favorito,
+        instructions: recetaProg.receta.instrucciones,
+        calories: recetaProg.receta.calorias,
+        protein: recetaProg.receta.proteinas,
+        carbohydrates: recetaProg.receta.carbohidratos,
+        fat: recetaProg.receta.grasas,
+        date: formatearFecha(recetaProg.fecha),
+        mealType: recetaProg.tipo_comida,
+        ingredients: recetaProg.receta.recetaIngrediente.map((ri) => ({
+          id: ri.ingrediente.id,
+          name: ri.ingrediente.nombre,
+          quantity: ri.cantidad,
+          unit: ri.unidad,
+          note: ri.nota,
+        })),
+      })),
+    };
+
+    res.json({ message: "Menú obtenido correctamente", data: menuFormateado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Ocurrió un error al obtener el menú",
+      details: error.message,
+    });
+  }
+};
+
 module.exports = {
   getMenusUsuario,
   getMenuSemanaUsuario,
   getListasCompraUsuario,
   alternarAdquirido,
   generarMenu,
+  getMenu,
 };
