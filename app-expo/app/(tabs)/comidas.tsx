@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { colors } from "../../styles/colors";
-import { styles as globalStyles } from '../../styles/globalStyles';
+import { styles as globalStyles, radius, spacing } from '../../styles/globalStyles';
 import { FontAwesome5 } from '@expo/vector-icons';
 import {
   Clock,
@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
   },
   menuWeekContainer: {
     backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
     marginBottom: 20,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
@@ -423,9 +423,9 @@ const styles = StyleSheet.create({
   recipesTabContainer: {},
   recipeCard: {
     backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
+    borderRadius: radius.lg, // Utiliza radius.lg
+    padding: spacing.xl, // Utiliza spacing.xl
+    marginBottom: spacing.xl, // Utiliza spacing.xl
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
   },

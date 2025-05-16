@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { colors } from "../colors";
-import { radius, shadow, spacing, typography } from "../globalStyles";
+import { spacing, typography, radius } from "../globalStyles";
 
 const { width: windowWidth } = Dimensions.get('window');
 
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: radius.lg,
     padding: spacing.xl,
-    ...shadow.md,
+    marginBottom: spacing.xl,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
   },

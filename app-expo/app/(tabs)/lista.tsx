@@ -17,7 +17,7 @@ export default function Lista() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Edit app/lista.tsx to edit this screen.</Text>
+      <Text style={styles.text}>Pendiente de implementar pantalla lista de la compra.</Text>
     </View>
   );
 }
@@ -27,9 +27,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: '#25292e',
+    backgroundColor: colors.lightGray,
   },
   text: {
-    color: '#fff'
+    color: colors.black,
   }
 });

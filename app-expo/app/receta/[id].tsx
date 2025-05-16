@@ -383,10 +383,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
-    backgroundColor: colors.lighterGray,
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     marginBottom: spacing.xl,
     ...shadow.sm,
+    borderWidth: 0.5,
+    borderColor: 'rgba(200, 200, 200, 0.5)',
   },
   itemMeta: {
     alignItems: 'center',
@@ -423,11 +425,13 @@ const styles = StyleSheet.create({
   itemNutricion: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: colors.lighterGray,
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.lg,
     alignItems: 'center',
     ...shadow.sm,
+    borderWidth: 0.5,
+    borderColor: 'rgba(200, 200, 200, 0.5)',
   },
   valorNutricion: {
     fontSize: typography.h2,
@@ -440,10 +444,12 @@ const styles = StyleSheet.create({
     color: colors.gray,
   },
   listaIngredientes: {
-    backgroundColor: colors.lighterGray,
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.lg,
     ...shadow.sm,
+    borderWidth: 0.5,
+    borderColor: 'rgba(200, 200, 200, 0.5)',
   },
   itemIngrediente: {
     flexDirection: 'row',
@@ -463,10 +469,12 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   contenedorPreparacion: {
-    backgroundColor: colors.lighterGray,
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.lg,
     ...shadow.sm,
+    borderWidth: 0.5,
+    borderColor: 'rgba(200, 200, 200, 0.5)',
   },
   pasoPreparacion: {
     flexDirection: 'row',

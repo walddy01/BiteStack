@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   },
   recipeCard: {
     backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
   },

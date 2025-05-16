@@ -38,7 +38,7 @@ export default function Perfil() {
   const menuOptions = [
     { title: "Editar Perfil", icon: <Edit3 size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
     { title: "Seguridad", icon: <ShieldCheck size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
-    { title: "Ayuda y Soporte", icon: <HelpCircle size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
+    // { title: "Ayuda y Soporte", icon: <HelpCircle size={24} color={colors.primary} />, onPress: () => mostrarAlerta("Próximamente...", 'info') },
     { title: "Acerca de", icon: <Info size={24} color={colors.primary} />, onPress: () => mostrarAlerta("BiteStack v1.0", 'info') },
   ];
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xl,
-    backgroundColor: colors.white,
+    backgroundColor: colors.lighterGray,
   },
   profileHeader: {
     alignItems: 'center',

@@ -5,9 +5,9 @@ import { radius, shadow, spacing, typography } from "../globalStyles";
 export const styles = StyleSheet.create({
   preferencesCard: {
     margin: spacing.xl,
-    padding: spacing.xl,
-    borderRadius: radius.md,
-    backgroundColor: colors.lighterGray,
+    padding: spacing.xl, // Utiliza spacing.xl
+    borderRadius: radius.lg, // Utiliza radius.lg
+    backgroundColor: colors.white,
     ...shadow.md,
     borderWidth: 0.5,
     borderColor: 'rgba(200, 200, 200, 0.5)',
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
   },
   preferencesDetails: {
     marginTop: spacing.lg,
-    marginBottom: spacing.sm,
+    // marginBottom: spacing.sm,
   },
   preferenceItem: {
     flexDirection: 'row',
@@ -111,7 +111,7 @@ export const styles = StyleSheet.create({
   },
   generarContainer: {
     marginHorizontal: spacing.xl,
-    marginTop: spacing.lg,
+    // marginTop: spacing.lg, // Cambiado para que coincida con SliderRecetas
   },
   generarButton: {
     flexDirection: 'row',
