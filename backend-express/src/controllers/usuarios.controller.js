@@ -15,6 +15,7 @@ const registro = async (req, res) => {
       preferencias_adicionales,
     } = req.body;
 
+    // 1) Validaciones básicas
     if (
       !email ||
       !password ||
@@ -24,23 +25,32 @@ const registro = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ error: "Datos inválidos o incompletos" });
+        .json({ error: 'Datos inválidos o incompletos' });
     }
 
-    const { data: sbData, error: sbError } =
-      await supabase.auth.admin.createUser({
+    // 2) signUp 
+    const { data: authData, error: authError } =
+      await supabase.auth.signUp({
         email,
         password,
-        email_confirm: true, // marcado como verificado
-        user_metadata: { nombre, apellidos },
+        options: {
+          data: {
+            nombre,
+            apellidos,
+          },
+        },
       });
-    if (sbError) {
-      return res.status(409).json({ error: sbError.message });
+    if (authError) {
+      console.error('Error en signUp:', authError);
+      return res
+        .status(409)
+        .json({ error: 'No se pudo crear el usuario' });
     }
 
+    // 3) Guardar tus datos extra en tu propia BD
     await prisma.usuario.create({
       data: {
-        id: sbData.user.id,
+        id: authData.user.id,
         email,
         nombre,
         apellidos,
@@ -50,17 +60,20 @@ const registro = async (req, res) => {
       },
     });
 
+    // 4) Responder al cliente
     return res.status(201).json({
-      message: "Registro exitoso",
-      data: { id: sbData.user.id },
+      message:
+        '¡Registro recibido! Revisa tu correo para confirmar tu cuenta.',
+      data: { id: authData.user.id },
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error en /usuarios/registro:', err);
     return res
       .status(500)
-      .json({ error: "Error en servidor", details: err.message });
+      .json({ error: 'Error interno de servidor' });
   }
 };
+
 
 // GET /usuarios/perfil
 const getPerfil = async (req, res) => {
