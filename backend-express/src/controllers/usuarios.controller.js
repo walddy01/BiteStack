@@ -13,6 +13,8 @@ const registro = async (req, res) => {
       dieta,
       porciones,
       preferencias_adicionales,
+      alergias, // Nuevo campo
+      calorias, // Nuevo campo
     } = req.body;
 
     // 1) Validaciones básicas
@@ -57,6 +59,8 @@ const registro = async (req, res) => {
         dieta,
         porciones,
         preferencias_adicionales,
+        alergias, // Nuevo campo
+        calorias, // Nuevo campo
       },
     });
 

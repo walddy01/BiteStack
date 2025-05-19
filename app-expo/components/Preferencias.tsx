@@ -101,7 +101,14 @@ export default function Preferencias({
 								style={componentStyles.preferenceInput}
 								value={String(preferencias.calorias)}
 								keyboardType="numeric"
-								onChangeText={(text) => handleChange('calorias', text)}
+								onChangeText={(text) => handleChange('calorias', text)} // Solo actualiza el estado temporalmente
+								onBlur={() => {
+									let finalValue = String(preferencias.calorias).replace(/[^0-9]/g, '').trim();
+									if (finalValue === '0' || finalValue === '') {
+										finalValue = '2000';
+									}
+									handleChange('calorias', finalValue);
+								}}
 							/>
 						</View>
 						<View style={componentStyles.preferenceItem}>
@@ -122,7 +129,14 @@ export default function Preferencias({
 								style={componentStyles.preferenceInput}
 								value={String(preferencias.porciones)}
                 keyboardType="numeric"
-								onChangeText={(text) => handleChange('porciones', text)}
+								onChangeText={(text) => handleChange('porciones', text)} // Solo actualiza el estado temporalmente
+								onBlur={() => {
+									let finalValue = String(preferencias.porciones).replace(/[^0-9]/g, '').trim();
+									if (finalValue === '0' || finalValue === '') {
+										finalValue = '1';
+									}
+									handleChange('porciones', finalValue);
+								}}
 							/>
 						</View>
 						<View style={[componentStyles.preferenceItem, componentStyles.textAreaContainer]}>
@@ -144,14 +158,17 @@ export default function Preferencias({
 						<View style={componentStyles.preferenceItem}>
 							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>Dieta</Text>
 							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
-								{preferencias.dieta}
+								{preferencias.dieta !== '' && preferencias.dieta !== null
+									? preferencias.dieta
+									: 'Sin preferencia'}
 							</Text>
 						</View>
 						<View style={componentStyles.preferenceItem}>
 							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Calorías
 							</Text>
-							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}
+							>
 								{preferencias.calorias}{' '}
 								{preferencias.calorias !== 0 ? 'kcal' : ''}
 							</Text>
@@ -160,7 +177,8 @@ export default function Preferencias({
 							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Alergias
 							</Text>
-							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}
+							>
 								{preferencias.alergias !== '' && preferencias.alergias !== null
 									? preferencias.alergias
 									: 'Ninguna'}
@@ -170,7 +188,8 @@ export default function Preferencias({
 							<Text style={[globalStyles.text, componentStyles.preferenceLabel, { color: colors.gray }]}>
 								Porciones
 							</Text>
-							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}>
+							<Text style={[globalStyles.text, componentStyles.preferenceValue, { color: colors.black }]}
+							>
 								{preferencias.porciones}
 							</Text>
 						</View>

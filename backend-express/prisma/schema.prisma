@@ -14,9 +14,9 @@ model Usuario {
   apellidos                String    @db.VarChar(255)
   email                    String    @unique @db.VarChar(255)
   alergias                 String?   @db.VarChar(255)
-  calorias                 Int?
+  calorias                 Int?      @default(2000)
   dieta                    String?   @db.VarChar(255)
-  porciones                Int?
+  porciones                Int?      @default(1)
   preferencias_adicionales String?   @db.VarChar(255)
   admin                    Boolean   @default(false)
   created_at               DateTime? @default(now())

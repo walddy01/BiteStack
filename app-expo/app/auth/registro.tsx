@@ -13,9 +13,11 @@ export default function RegistroScreen() {
     apellidos: "",
     email: "",
     password: "",
-    dieta: "",
-    porciones: "",
+    dieta: "", // Valor por defecto
+    porciones: "1", // Valor por defecto
     preferencias: "",
+    alergias: "",
+    calorias: "2000", // Valor por defecto
   });
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
@@ -74,8 +76,10 @@ export default function RegistroScreen() {
         nombre: form.nombre.trim(),
         apellidos: form.apellidos.trim(),
         dieta: form.dieta.trim() || undefined,
-        porciones: form.porciones ? Number(form.porciones) : undefined,
+        porciones: form.porciones.trim() === "" ? undefined : Number(form.porciones.trim()),
         preferencias_adicionales: form.preferencias.trim() || undefined,
+        alergias: form.alergias.trim() || undefined,
+        calorias: form.calorias.trim() === "" ? undefined : Number(form.calorias.trim()),
       });
       if (response.error) {
         setError(response.error);
@@ -155,8 +159,23 @@ export default function RegistroScreen() {
               value={form.porciones}
             />
             <TextInput
+              style={styles.input}
+              placeholder="Alergias (ej: Maní, Gluten)"
+              placeholderTextColor={colors.gray}
+              onChangeText={v => onChange("alergias", v)}
+              value={form.alergias}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Calorías diarias (ej: 2000)"
+              placeholderTextColor={colors.gray}
+              keyboardType="numeric"
+              onChangeText={v => onChange("calorias", v)}
+              value={form.calorias}
+            />
+            <TextInput
               style={[styles.input, styles.textArea]}
-              placeholder="Preferencias adicionales o alergias"
+              placeholder="Preferencias adicionales"
               placeholderTextColor={colors.gray}
               onChangeText={v => onChange("preferencias", v)}
               value={form.preferencias}

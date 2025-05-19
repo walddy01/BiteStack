@@ -63,6 +63,8 @@ export function useAuth() {
     dieta?: string;
     porciones?: number;
     preferencias_adicionales?: string;
+    alergias?: string; // Nuevo campo
+    calorias?: number; // Nuevo campo
   }) => {
     const globalLoadingState = cargando;
     setCargando(true);
