@@ -218,20 +218,20 @@ const regenerarReceta = async (req, res) => {
         - **amount**: Numeric value indicating the quantity.
         - **unit**: Unit of measurement (g, ml, l, etc.).
     - **instructions**: Array of step-by-step instructions.
-    - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings).
-    - **protein_per_serving**: Grams of protein per serving.
-    - **carbohydrates_per_serving**: Grams of carbohydrates per serving.
-    - **fat_per_serving**: Grams of fat per serving.
+    - **total_calories_per_serving**: Calories per serving (total calories divided by number_of_servings). This value MUST be calculated and non-zero unless the recipe genuinely has zero calories.
+    - **protein_per_serving**: Grams of protein per serving. This value MUST be calculated and non-zero unless the recipe genuinely has zero protein.
+    - **carbohydrates_per_serving**: Grams of carbohydrates per serving. This value MUST be calculated and non-zero unless the recipe genuinely has zero carbohydrates.
+    - **fat_per_serving**: Grams of fat per serving. This value MUST be calculated and non-zero unless the recipe genuinely has zero fat.
 
     ### Important Notes & Modification Guidelines:
     - **Context is Key**: Use the provided original recipe as the primary context for modifications. If the user asks for a small change, modify that part but keep the rest of the recipe consistent unless specified otherwise. If the user asks for a major change (e.g., "make it vegan"), adapt all necessary parts of the original recipe.
-    - **Return Complete Recipe**: Always return the *entire modified recipe object*, not just the changed parts.
+    - **Return Complete Recipe**: Always return the *entire modified recipe object*, including all fields specified above. All nutritional values (calories, protein, carbohydrates, fat) MUST be calculated and provided per serving. Do not return zero for these values unless the recipe genuinely contains zero of that nutrient.
     - **Language**: The entire recipe (titles, descriptions, ingredients, instructions, notes) MUST be in Spanish.
     - **Field Names**: JSON field names MUST remain in English, as specified above.
     - **Ingredient Names**: MUST start with a capital letter to maintain consistency.
     - **Ingredient Notes**: Use the "notes" field for an ingredient only when it's genuinely necessary for clarification (e.g., "Tomatoes, ripe", "Milk, preferably whole"). Avoid using "notes" for trivial details that are obvious or don't significantly impact the recipe.
     - **SI Units**: **Use only International System of Units (SI) measurements**: g, ml, l, °C, etc. Avoid cups, ounces, teaspoons, tablespoons, Fahrenheit, or any non-SI unit. This applies to any new or modified ingredients.
-    - **Nutritional Values**: Ensure nutritional values are per serving. If the number_of_servings changes due to the modification, recalculate these values accordingly.
+    - **Nutritional Values**: Ensure nutritional values are per serving. If the number_of_servings changes due to the modification, recalculate these values accordingly. These values must be greater than zero unless the food item genuinely has zero of that nutrient.
     - **Clarity**: Provide specific ingredient quantities and clear instructions in the modified recipe.
     - **Interpretation**: If the user's modification prompt is unclear or contradictory, try your best to interpret it reasonably or maintain the original aspect for that part if modification is not feasible.
     `;

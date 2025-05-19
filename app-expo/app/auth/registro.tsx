@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "@/styles/auth/registro.styles";
+import AlertPersonalizado from "@/components/AlertPersonalizado"; // Importar AlertPersonalizado
 
 export default function RegistroScreen() {
   const { signUpApi } = useAuth();
@@ -21,6 +22,10 @@ export default function RegistroScreen() {
   });
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
+  const [alertVisible, setAlertVisible] = useState(false); // Estado para la visibilidad de la alerta
+  const [alertMessage, setAlertMessage] = useState(""); // Estado para el mensaje de la alerta
+  const [alertType, setAlertType] = useState<"exito" | "error" | "info">("info"); // Estado para el tipo de alerta
+
 
   const onChange = (key: string, val: string) =>
     setForm(f => ({ ...f, [key]: val }));
@@ -87,11 +92,18 @@ export default function RegistroScreen() {
         return;
       }
       setLoading(false);
-      router.replace("/auth/login");
+      setAlertMessage("Por favor, verifica tu correo electrónico para activar tu cuenta.");
+      setAlertType("info");
+      setAlertVisible(true);
     } catch {
       setError("Error al registrar usuario. Por favor, intente nuevamente.");
       setLoading(false);
     }
+  };
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    router.replace("/auth/login");
   };
 
   const renderStepContent = () => {
@@ -225,6 +237,12 @@ export default function RegistroScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <AlertPersonalizado
+        visible={alertVisible}
+        mensaje={alertMessage}
+        tipo={alertType}
+        onClose={handleAlertClose}
+      />
     </KeyboardAvoidingView>
   );
 }
