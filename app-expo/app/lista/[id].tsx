@@ -17,7 +17,6 @@ import {
 } from "../../styles/globalStyles";
 import {
   useObtenerListasCompra,
-  ListaCompra,
   Ingrediente,
 } from "@/hooks/useObtenerListasCompra";
 import { useAlternarAdquiridoIngrediente } from "@/hooks/useAlternarAdquiridoIngrediente";
