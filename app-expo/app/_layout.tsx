@@ -42,6 +42,7 @@ export default function RootLayout() {
       )}
       <Stack.Screen name="receta/[id]" options={{ headerShown: false, title: "Receta" }} />
       <Stack.Screen name="menu/[id]" options={{ headerShown: false, title: "Menú" }} />
+      <Stack.Screen name="lista/[id]" options={{ headerShown: false, title: "Lista de Compra" }} />
       <Stack.Screen name="auth/registro" options={{ headerShown: false, title: "Registro" }} />
       <Stack.Screen name="+not-found" options={{ headerShown: false }} />
     </Stack>

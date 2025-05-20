@@ -248,11 +248,9 @@ const alternarAdquirido = async (req, res) => {
 
 // POST /menus/generar
 const generarMenu = async (req, res) => {
-  console.time("total");
   const idUsuario = req.user.id;
 
   // 1. Obtener datos del usuario
-  console.time("fetch-usuario");
   const datosUsuario = await prisma.usuario.findUnique({
     where: { id: idUsuario },
     select: {
@@ -263,14 +261,11 @@ const generarMenu = async (req, res) => {
       preferencias_adicionales: true,
     },
   });
-  console.timeEnd("fetch-usuario");
   if (!datosUsuario) {
-    console.timeEnd("total");
     return res.status(404).json({ error: "Usuario no encontrado" });
   }
 
   // 2. Fecha de inicio de la semana y comprobación de menú existente
-  console.time("check-menu-existente");
   const inicioSemana = obtenerInicioSemana(new Date());
   const fechaInicioSemana = new Date(formatearFecha(inicioSemana));
   const menuExistente = await prisma.menu.findFirst({
@@ -279,16 +274,13 @@ const generarMenu = async (req, res) => {
       fecha_inicio_semana: fechaInicioSemana,
     },
   });
-  console.timeEnd("check-menu-existente");
   if (menuExistente) {
-    console.timeEnd("total");
     return res
       .status(409)
       .json({ error: "Ya existe un menú para esta semana." });
   }
 
   // 3. Determinar comidas seleccionadas y construir lista de prompts
-  console.time("build-prompts");
   let tiposComidaSeleccionados = [];
   if (req.body.desayuno) tiposComidaSeleccionados.push("Desayuno");
   if (req.body.almuerzo) tiposComidaSeleccionados.push("Almuerzo");
@@ -319,10 +311,8 @@ const generarMenu = async (req, res) => {
       listaPrompts.push(prompt);
     });
   }
-  console.timeEnd("build-prompts");
 
   // 4. Llamadas a la IA
-  console.time("generate-IA");
   const generarRecetaAI = async prompt => {
     const systemPrompt = `
     Generate a recipe in JSON format with the following structure:
@@ -371,10 +361,8 @@ const generarMenu = async (req, res) => {
     const recetasDia = await Promise.all(lote.map(generarRecetaAI));
     recetasGeneradasIA.push(...recetasDia);
   }
-  console.timeEnd("generate-IA");
 
   // 5. Transacción principal (menú, lista, recetas y menú-receta)
-  console.time("db-transaction");
   const { nuevoMenu, nuevaLista, recetasGuardadas } =
     await prisma.$transaction(
       async tx => {
@@ -442,46 +430,68 @@ const generarMenu = async (req, res) => {
       },
       { timeout: 120000 }
     );
-  console.timeEnd("db-transaction");
 
-  // 6. Insertar ingredientes únicos
-  console.time("insert-ingredientes");
+  // 6. Insertar ingredientes únicos (por nombre, sin importar mayúsculas/minúsculas)
+  // Creamos un Map con clave en minúsculas para evitar duplicados
   const mapaIngredientesUnicos = new Map();
   recetasGeneradasIA.forEach(r =>
     r.ingredients.forEach(ing => {
-      if (!mapaIngredientesUnicos.has(ing.ingredient)) {
-        mapaIngredientesUnicos.set(ing.ingredient, ing);
+      const nombreKey = ing.ingredient.trim().toLowerCase();
+      if (!mapaIngredientesUnicos.has(nombreKey)) {
+        mapaIngredientesUnicos.set(nombreKey, ing);
       }
     })
   );
-  if (mapaIngredientesUnicos.size) {
+
+  // Buscar ingredientes ya existentes en la base de datos (ignorando mayúsculas/minúsculas)
+  const nombresUnicos = Array.from(mapaIngredientesUnicos.values()).map(ing =>
+    ing.ingredient.trim()
+  );
+  const ingredientesExistentes = await prisma.ingrediente.findMany({
+    where: {
+      // Prisma no soporta case-insensitive en arrays, así que filtramos después
+      nombre: { in: nombresUnicos },
+    },
+    select: { id: true, nombre: true },
+  });
+
+  // Creamos un set de nombres existentes en minúsculas para comparar
+  const nombresExistentesSet = new Set(
+    ingredientesExistentes.map(ing => ing.nombre.trim().toLowerCase())
+  );
+
+  // Solo creamos los ingredientes que no existen (ignorando mayúsculas/minúsculas)
+  const ingredientesParaCrear = Array.from(mapaIngredientesUnicos.values()).filter(
+    ing => !nombresExistentesSet.has(ing.ingredient.trim().toLowerCase())
+  );
+
+  if (ingredientesParaCrear.length) {
     await prisma.ingrediente.createMany({
-      data: [...mapaIngredientesUnicos.values()].map(ing => ({
-        nombre: ing.ingredient,
+      data: ingredientesParaCrear.map(ing => ({
+        nombre: ing.ingredient.trim(),
       })),
       skipDuplicates: true,
     });
   }
-  console.timeEnd("insert-ingredientes");
 
-  // 7. Obtener IDs de ingredientes
-  console.time("fetch-ingredientes-db");
+  // 7. Obtener IDs de ingredientes (ya todos existen)
   const ingredientesEnDB = await prisma.ingrediente.findMany({
-    where: { nombre: { in: [...mapaIngredientesUnicos.keys()] } },
+    where: {
+      nombre: { in: Array.from(mapaIngredientesUnicos.values()).map(ing => ing.ingredient.trim()) }
+    },
     select: { id: true, nombre: true },
   });
-  console.timeEnd("fetch-ingredientes-db");
 
   // 8. Crear relaciones receta-ingrediente
-  console.time("insert-relaciones");
+  // Creamos un Map para buscar el id por nombre (ignorando mayúsculas/minúsculas)
   const mapaIdsIngredientes = new Map(
-    ingredientesEnDB.map(ing => [ing.nombre, ing.id])
+    ingredientesEnDB.map(ing => [ing.nombre.trim().toLowerCase(), ing.id])
   );
   const relaciones = [];
   recetasGeneradasIA.forEach((recIA, idx) => {
     const idReceta = recetasGuardadas[idx].id;
     recIA.ingredients.forEach(ing => {
-      const idIng = mapaIdsIngredientes.get(ing.ingredient);
+      const idIng = mapaIdsIngredientes.get(ing.ingredient.trim().toLowerCase());
       if (idIng) {
         relaciones.push({
           receta_id: idReceta,
@@ -499,10 +509,27 @@ const generarMenu = async (req, res) => {
       skipDuplicates: true,
     });
   }
-  console.timeEnd("insert-relaciones");
 
-  // 9. Crear y devolver la respuesta
-  console.time("build-response");
+  // 9. Crear entradas en IngredienteListaCompra (SOLO INGREDIENTES ÚNICOS POR LISTA, ignorando mayúsculas/minúsculas)
+  const ingredientesUnicosPorLista = new Map();
+  relaciones.forEach(rel => {
+    if (!ingredientesUnicosPorLista.has(rel.ingrediente_id)) {
+      ingredientesUnicosPorLista.set(rel.ingrediente_id, {
+        ingrediente_id: rel.ingrediente_id,
+        lista_compra_id: nuevaLista.id,
+        adquirido: false,
+      });
+    }
+  });
+
+  if (ingredientesUnicosPorLista.size > 0) {
+    await prisma.ingredienteListaCompra.createMany({
+      data: Array.from(ingredientesUnicosPorLista.values()),
+      skipDuplicates: true,
+    });
+  }
+
+  // 10. Crear y devolver la respuesta
   const menuFormateado = {
     id: nuevoMenu.id,
     fecha_inicio_semana: formatearFecha(nuevoMenu.fecha_inicio_semana),
@@ -528,9 +555,7 @@ const generarMenu = async (req, res) => {
       },
     }),
   };
-  console.timeEnd("build-response");
 
-  console.timeEnd("total");
   res.status(201).json({ message: "Menú generado correctamente", data: menuFormateado });
 };
 
