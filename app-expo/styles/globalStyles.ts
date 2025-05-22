@@ -74,4 +74,11 @@ export const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
+  errorText: {
+    color: colors.red,
+    textAlign: "center",
+    marginBottom: spacing.md,
+    fontSize: typography.body2,
+    width: '100%',
+  },
 });

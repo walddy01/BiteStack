@@ -172,7 +172,7 @@ export default function RegistroScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Alergias (ej: Maní, Gluten)"
+              placeholder="Alergias (ej: Frutos secos, Gluten)"
               placeholderTextColor={colors.gray}
               onChangeText={v => onChange("alergias", v)}
               value={form.alergias}

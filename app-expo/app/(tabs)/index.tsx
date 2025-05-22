@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, Text, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native';
-import { styles } from '../../styles/globalStyles'
+import { styles as globalStyles } from '../../styles/globalStyles'
+import { styles as indexStyles } from '../../styles/tabs/index.styles';
 import AlertPersonalizado from '@/components/AlertPersonalizado'
 import Preferencias from '@/components/Preferencias'
 import SliderRecetas from '@/components/SliderRecetas'
@@ -136,20 +137,20 @@ export default function Index() {
 
   if (cargandoObtenerPrefs) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
+      <View style={indexStyles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.text, { marginTop: 10 }]}>Cargando preferencias...</Text>
+        <Text style={[globalStyles.text, { marginTop: 10 }]}>Cargando preferencias...</Text>
       </View>
     )
   }
 
   if (!session && !cargandoObtenerPrefs) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
-        <Text style={[styles.text, styles.bold, { color: colors.red, marginBottom: 10 }]}>
+      <View style={indexStyles.authErrorContainer}>
+        <Text style={[globalStyles.text, globalStyles.bold, indexStyles.authErrorTitle]}>
           Error de Autenticación
         </Text>
-        <Text style={[styles.text, { textAlign: 'center', paddingHorizontal: 20 }]}>
+        <Text style={[globalStyles.text, indexStyles.authErrorText]}>
           No estás autenticado. Por favor, inicia sesión para continuar.
         </Text>
       </View>
@@ -159,11 +160,11 @@ export default function Index() {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={globalStyles.container}>
         <ScrollView>
-          <View style={styles.header}>
-            <Text style={styles.title}>Tu Plan Semanal</Text>
-            <Text style={styles.subtitle}>
+          <View style={globalStyles.header}>
+            <Text style={globalStyles.title}>Tu Plan Semanal</Text>
+            <Text style={globalStyles.subtitle}>
               Buenos días, {session?.user?.user_metadata?.nombre}
             </Text>
           </View>

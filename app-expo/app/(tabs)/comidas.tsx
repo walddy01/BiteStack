@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from "@/hooks/useAuth";
 import {
-  StyleSheet,
   Text,
   View,
   TouchableOpacity,
@@ -9,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { colors } from "../../styles/colors";
-import { styles as globalStyles, radius, spacing } from '../../styles/globalStyles';
+import { styles as globalStyles } from '../../styles/globalStyles';
 import { FontAwesome5 } from '@expo/vector-icons';
 import {
   Clock,
@@ -19,12 +18,15 @@ import {
   UtensilsCrossed,
   Moon,
   Heart,
+  CalendarDays,
+  ClipboardList
 } from 'lucide-react-native';
 import useMarcarFavorito from '../../hooks/useMarcarFavorito';
 import useObtenerRecetasFavoritas, { FullRecipe } from '../../hooks/useObtenerRecetasFavoritas';
 import useObtenerHistorialMenu from '../../hooks/useObtenerHistorialMenus';
 import { useFocusEffect } from '@react-navigation/native';
-import { router } from 'expo-router'; // Importar router desde expo-router
+import { router } from 'expo-router';
+import { styles } from '../../styles/tabs/comidas.styles';
 
 // Icono según tipo de comida
 function obtenerIconoComida(tipoComida: string) {
@@ -200,7 +202,13 @@ export default function Comidas() {
             </Text>
           )}
           {!cargandoMenus && !errorMenus && menus.length === 0 && (
-            <Text style={styles.placeholderText}>No tienes menús en tu historial.</Text>
+            <View style={styles.emptyStateContainer}>
+              <CalendarDays size={60} color={colors.gray} strokeWidth={1.5} />
+              <Text style={styles.emptyStateTitle}>No hay menús en tu historial</Text>
+              <Text style={styles.emptyStateSubtitle}>
+                Cuando generes un menú, aparecerá aquí.
+              </Text>
+            </View>
           )}
           {!cargandoMenus && !errorMenus && menus.map((menu) => {
             const mostrarRecetas = menu.recipes.slice(0, 3);
@@ -254,7 +262,13 @@ export default function Comidas() {
             </Text>
           )}
           {!cargandoRecetas && !errorRecetas && localRecetas.length === 0 && (
-            <Text style={styles.placeholderText}>No tienes recetas guardadas.</Text>
+            <View style={styles.emptyStateContainer}>
+              <ClipboardList size={60} color={colors.gray} strokeWidth={1.5} />
+              <Text style={styles.emptyStateTitle}>No tienes recetas guardadas</Text>
+              <Text style={styles.emptyStateSubtitle}>
+                Marca tus recetas favoritas para verlas aquí.
+              </Text>
+            </View>
           )}
           {!cargandoRecetas && !errorRecetas && localRecetas.map((recipe) => (
             <TouchableOpacity key={recipe.id} onPress={() => router.push({ pathname: '/receta/[id]', params: { id: recipe.id.toString() } } as any)} activeOpacity={0.7}>
@@ -306,174 +320,3 @@ export default function Comidas() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    backgroundColor: colors.lighterGray,
-    paddingHorizontal: 20,
-  },
-  headerContainer: {
-    paddingTop: 50,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.black,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  toggleButtons: {
-    flexDirection: 'row',
-    marginBottom: 25,
-    gap: 0,
-  },
-  toggleButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeButton: {
-    backgroundColor: colors.primary,
-  },
-  inactiveButton: {
-    backgroundColor: colors.lightGray,
-  },
-  toggleButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  activeButtonText: {
-    color: colors.white,
-  },
-  inactiveButtonText: {
-    color: colors.gray,
-  },
-  menuWeekContainer: {
-    backgroundColor: colors.white,
-    borderRadius: radius.lg,
-    padding: spacing.xl,
-    marginBottom: 20,
-    borderWidth: 0.5,
-    borderColor: 'rgba(200, 200, 200, 0.5)',
-  },
-  menuWeekHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  menuWeekTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.black,
-    marginLeft: 10,
-  },
-  menuItemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-  },
-  menuItemName: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  menuItemTimeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  menuItemTime: {
-    fontSize: 14,
-    color: colors.gray,
-    marginLeft: 6,
-  },
-  verMasContainer: {
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  verMasText: {
-    color: colors.primary,
-    fontWeight: 'bold',
-    fontSize: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  verMasBoton: { // Nuevo estilo para el botón
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20, // Bordes redondeados para un look de botón
-    marginTop: 10, // Espacio arriba
-  },
-  verMasBotonText: { // Nuevo estilo para el texto del botón
-    color: colors.white,
-    fontWeight: 'bold',
-    fontSize: 15,
-    marginLeft: 8, // Espacio entre el icono y el texto
-  },
-  recipesTabContainer: {},
-  recipeCard: {
-    backgroundColor: colors.white,
-    borderRadius: radius.lg, // Utiliza radius.lg
-    padding: spacing.xl, // Utiliza spacing.xl
-    marginBottom: spacing.xl, // Utiliza spacing.xl
-    borderWidth: 0.5,
-    borderColor: 'rgba(200, 200, 200, 0.5)',
-  },
-  recipeCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    gap: 10,
-  },
-  recipeTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 10,
-  },
-  recipeTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.black,
-  },
-  recipeDescription: {
-    fontSize: 15,
-    color: colors.gray,
-    lineHeight: 15 * 1.4,
-    marginBottom: 10,
-  },
-  recipeInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    paddingTop: 10,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  infoText: {
-    fontSize: 13,
-    color: colors.gray,
-    fontWeight: '500',
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: colors.gray,
-    textAlign: 'center',
-    marginTop: 30,
-  },
-});

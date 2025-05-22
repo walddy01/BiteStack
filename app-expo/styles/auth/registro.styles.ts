@@ -90,14 +90,13 @@ export const styles = StyleSheet.create({
     fontSize: typography.body2,
     textAlign: 'center',
   },
-  errorText: {
-    color: colors.red,
-    textAlign: "center",
-    marginBottom: spacing.md,
-    fontSize: typography.body2,
-    width: '100%',
-  },
   activityIndicator: {
     marginVertical: spacing.lg,
+  },
+  errorText: {
+    color: colors.red,
+    fontSize: typography.body2,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   }
 });

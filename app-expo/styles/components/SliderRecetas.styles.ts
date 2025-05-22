@@ -116,6 +116,20 @@ export const styles = StyleSheet.create({
     fontSize: typography.body1,
     color: colors.gray 
   },
+  noDataTitle: {
+    fontSize: typography.h2, // Cambiado de h3 a h2
+    fontWeight: 'bold',
+    color: colors.black,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  noDataSubtitle: {
+    fontSize: typography.body1,
+    color: colors.gray,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+  },
   navButton: {
     padding: spacing.xs,
   }

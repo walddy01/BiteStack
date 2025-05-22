@@ -65,13 +65,6 @@ export const styles = StyleSheet.create({
   secondaryButtonText: {
     color: colors.primary,
   },
-  errorText: {
-    color: colors.red,
-    textAlign: "center",
-    marginBottom: spacing.md,
-    fontSize: typography.body2,
-    width: '100%',
-  },
   activityIndicator: {
     marginVertical: spacing.lg,
   }

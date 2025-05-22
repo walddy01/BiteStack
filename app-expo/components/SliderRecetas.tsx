@@ -167,8 +167,12 @@ export default function SliderRecetas({
   }
   if (!menuData || menuData.recipes.length === 0) {
     return (
-      <SafeAreaView style={componentStyles.centered}>
-        <Text style={componentStyles.noDataText}>No hay recetas disponibles para mostrar.</Text>
+      <SafeAreaView style={[componentStyles.centered, {paddingHorizontal: 20}]}>
+        <ChefHat size={60} color={colors.gray} strokeWidth={1.5} />
+        <Text style={componentStyles.noDataTitle}>No hay recetas disponibles</Text>
+        <Text style={componentStyles.noDataSubtitle}>
+          Parece que no hay recetas en el menú para esta semana.
+        </Text>
       </SafeAreaView>
     )
   }
